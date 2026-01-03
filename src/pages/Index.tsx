@@ -6,7 +6,9 @@ import { AlertsList } from "@/components/dashboard/AlertsList";
 import { RIOHSCard } from "@/components/dashboard/RIOHSCard";
 import { AreaStatusGrid } from "@/components/dashboard/AreaStatusGrid";
 import { AccidentTrendChart } from "@/components/dashboard/AccidentTrendChart";
+import { UserMenu } from "@/components/layout/UserMenu";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 import {
   HardHat,
   AlertTriangle,
@@ -22,6 +24,7 @@ import {
 } from "lucide-react";
 
 const Index = () => {
+  const { isAdmin } = useAuth();
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
@@ -71,6 +74,8 @@ const Index = () => {
                 <Plus className="h-4 w-4 mr-2" />
                 Reportar Incidente
               </Button>
+
+              <UserMenu />
             </div>
           </div>
         </header>

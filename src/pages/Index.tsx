@@ -8,7 +8,10 @@ import { AreaStatusGrid } from "@/components/dashboard/AreaStatusGrid";
 import { AccidentTrendChart } from "@/components/dashboard/AccidentTrendChart";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
+import { usePreventionKPIs, useIncidents, useCorrectiveActions } from "@/hooks/usePrevention";
+import { IncidentForm } from "@/components/prevention/IncidentForm";
 import {
   HardHat,
   AlertTriangle,
@@ -16,15 +19,40 @@ import {
   FileCheck,
   TrendingDown,
   Activity,
-  Plus,
   Download,
   Calendar,
   Search,
   Bell,
 } from "lucide-react";
+import { differenceInDays, startOfDay } from "date-fns";
 
 const Index = () => {
   const { isAdmin } = useAuth();
+  const { data: kpis, isLoading: isLoadingKPIs } = usePreventionKPIs();
+  const { data: incidents } = useIncidents();
+  const { data: correctiveActions } = useCorrectiveActions();
+
+  // Calculate days without accidents
+  const lastAccident = incidents?.find(i => i.severity === 'grave' || i.severity === 'catastrofico');
+  const daysSinceAccident = lastAccident 
+    ? differenceInDays(new Date(), new Date(lastAccident.incident_date))
+    : 365; // Default if no accidents
+
+  // Calculate overdue actions
+  const overdueActions = correctiveActions?.filter(
+    a => a.status === 'pending' && new Date(a.due_date) < startOfDay(new Date())
+  ).length || 0;
+
+  // Calculate compliance scores
+  const sstCompliance = kpis ? Math.round(
+    (100 - (kpis.tf * 5)) * 0.4 + 
+    kpis.training_compliance * 0.3 + 
+    kpis.inspections_compliance * 0.3
+  ) : 87;
+
+  const legalCompliance = kpis ? Math.round(kpis.training_compliance) : 92;
+  const isoCompliance = kpis ? Math.round(kpis.inspections_compliance) : 85;
+
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
@@ -55,14 +83,16 @@ const Index = () => {
 
               <Button variant="outline" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
-                  5
-                </span>
+                {kpis && kpis.open_incidents > 0 && (
+                  <span className="absolute -top-1 -right-1 h-4 w-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {kpis.open_incidents}
+                  </span>
+                )}
               </Button>
 
               <Button variant="outline" size="sm">
                 <Calendar className="h-4 w-4 mr-2" />
-                Enero 2025
+                Enero 2026
               </Button>
 
               <Button variant="outline" size="sm">
@@ -70,10 +100,7 @@ const Index = () => {
                 Exportar
               </Button>
 
-              <Button size="sm" className="shadow-safety">
-                <Plus className="h-4 w-4 mr-2" />
-                Reportar Incidente
-              </Button>
+              <IncidentForm />
 
               <UserMenu />
             </div>
@@ -90,10 +117,19 @@ const Index = () => {
                   <HardHat className="h-10 w-10" />
                 </div>
                 <div>
-                  <h2 className="text-3xl font-bold">87%</h2>
-                  <p className="text-lg font-medium opacity-90">
-                    Cumplimiento Global SST
-                  </p>
+                  {isLoadingKPIs ? (
+                    <>
+                      <Skeleton className="h-9 w-20 bg-primary-foreground/20 mb-1" />
+                      <Skeleton className="h-5 w-40 bg-primary-foreground/20" />
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-3xl font-bold">{sstCompliance}%</h2>
+                      <p className="text-lg font-medium opacity-90">
+                        Cumplimiento Global SST
+                      </p>
+                    </>
+                  )}
                   <p className="text-sm opacity-75">
                     ISO 45001 • Normativa Chilena • Ley 16.744
                   </p>
@@ -102,16 +138,28 @@ const Index = () => {
 
               <div className="flex gap-8">
                 <div className="text-center">
-                  <div className="text-4xl font-bold">92%</div>
+                  {isLoadingKPIs ? (
+                    <Skeleton className="h-10 w-16 bg-primary-foreground/20 mb-1" />
+                  ) : (
+                    <div className="text-4xl font-bold">{legalCompliance}%</div>
+                  )}
                   <div className="text-sm opacity-75">Cumplimiento Legal</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold">85%</div>
+                  {isLoadingKPIs ? (
+                    <Skeleton className="h-10 w-16 bg-primary-foreground/20 mb-1" />
+                  ) : (
+                    <div className="text-4xl font-bold">{isoCompliance}%</div>
+                  )}
                   <div className="text-sm opacity-75">Cumplimiento ISO</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-4xl font-bold">84%</div>
-                  <div className="text-sm opacity-75">Gestión de Riesgos</div>
+                  {isLoadingKPIs ? (
+                    <Skeleton className="h-10 w-16 bg-primary-foreground/20 mb-1" />
+                  ) : (
+                    <div className="text-4xl font-bold">{kpis?.total_workers || 0}</div>
+                  )}
+                  <div className="text-sm opacity-75">Trabajadores</div>
                 </div>
               </div>
             </div>
@@ -121,44 +169,43 @@ const Index = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
             <MetricCard
               title="Tasa Frecuencia"
-              value="0.8"
+              value={isLoadingKPIs ? "..." : (kpis?.tf?.toString() || "0")}
               icon={Activity}
-              status="success"
+              status={!kpis ? "neutral" : kpis.tf < 2 ? "success" : kpis.tf < 5 ? "warning" : "danger"}
               trend={{ value: -15, label: "vs mes anterior" }}
             />
             <MetricCard
               title="Días sin Accidentes"
-              value="127"
+              value={daysSinceAccident.toString()}
               icon={TrendingDown}
-              status="success"
-              subtitle="Récord: 180 días"
+              status={daysSinceAccident > 30 ? "success" : "warning"}
+              subtitle="Grave/Catastrófico"
             />
             <MetricCard
               title="Incidentes Abiertos"
-              value="3"
+              value={isLoadingKPIs ? "..." : (kpis?.open_incidents?.toString() || "0")}
               icon={AlertTriangle}
-              status="warning"
-              trend={{ value: 12, label: "vs mes anterior" }}
+              status={!kpis ? "neutral" : kpis.open_incidents === 0 ? "success" : kpis.open_incidents < 5 ? "warning" : "danger"}
             />
             <MetricCard
               title="Acciones Vencidas"
-              value="8"
+              value={overdueActions.toString()}
               icon={Clock}
-              status="danger"
-              subtitle="Requiere atención"
+              status={overdueActions === 0 ? "success" : "danger"}
+              subtitle={overdueActions > 0 ? "Requiere atención" : "Al día"}
             />
             <MetricCard
               title="Inspecciones"
-              value="94%"
+              value={isLoadingKPIs ? "..." : `${kpis?.inspections_compliance || 0}%`}
               icon={FileCheck}
-              status="success"
-              trend={{ value: 5, label: "cumplimiento" }}
+              status={!kpis ? "neutral" : kpis.inspections_compliance >= 90 ? "success" : kpis.inspections_compliance >= 70 ? "warning" : "danger"}
+              subtitle={`${kpis?.inspections_done || 0}/${kpis?.inspections_planned || 0}`}
             />
             <MetricCard
               title="Capacitaciones"
-              value="89%"
+              value={isLoadingKPIs ? "..." : `${kpis?.training_compliance || 0}%`}
               icon={HardHat}
-              status="success"
+              status={!kpis ? "neutral" : kpis.training_compliance >= 95 ? "success" : kpis.training_compliance >= 80 ? "warning" : "danger"}
               subtitle="Legal vigente"
             />
           </div>
@@ -184,12 +231,22 @@ const Index = () => {
                 <h3 className="font-semibold text-foreground mb-4">
                   Indicadores de Cumplimiento
                 </h3>
-                <ComplianceGauge label="Cumplimiento SST" value={87} />
-                <ComplianceGauge label="Cumplimiento Legal" value={92} />
-                <ComplianceGauge label="Cumplimiento ISO" value={85} />
-                <ComplianceGauge label="Capacitaciones" value={89} />
-                <ComplianceGauge label="Inspecciones" value={94} />
-                <ComplianceGauge label="Documentación" value={78} status="warning" />
+                <ComplianceGauge label="Cumplimiento SST" value={sstCompliance} />
+                <ComplianceGauge label="Cumplimiento Legal" value={legalCompliance} />
+                <ComplianceGauge label="Cumplimiento ISO" value={isoCompliance} />
+                <ComplianceGauge 
+                  label="Capacitaciones" 
+                  value={Math.round(kpis?.training_compliance || 89)} 
+                />
+                <ComplianceGauge 
+                  label="Inspecciones" 
+                  value={Math.round(kpis?.inspections_compliance || 94)} 
+                />
+                <ComplianceGauge 
+                  label="Documentación" 
+                  value={78} 
+                  status="warning" 
+                />
               </div>
 
               <AreaStatusGrid />
@@ -207,17 +264,32 @@ const Index = () => {
                 { label: "Informe Gerencial", icon: Download },
                 { label: "Matriz de Riesgos", icon: AlertTriangle },
                 { label: "Actas Comité", icon: Calendar },
-                { label: "Nueva Inspección", icon: Plus },
-                { label: "Reportar Incidente", icon: AlertTriangle },
+                { label: "Nueva Inspección", icon: FileCheck },
+                { label: "Reportar Incidente", icon: AlertTriangle, isIncident: true },
               ].map((action) => (
-                <Button
-                  key={action.label}
-                  variant="outline"
-                  className="h-auto py-4 flex-col gap-2 hover:border-primary hover:bg-primary/5"
-                >
-                  <action.icon className="h-5 w-5" />
-                  <span className="text-xs text-center">{action.label}</span>
-                </Button>
+                action.isIncident ? (
+                  <IncidentForm
+                    key={action.label}
+                    trigger={
+                      <Button
+                        variant="outline"
+                        className="h-auto py-4 flex-col gap-2 hover:border-primary hover:bg-primary/5"
+                      >
+                        <action.icon className="h-5 w-5" />
+                        <span className="text-xs text-center">{action.label}</span>
+                      </Button>
+                    }
+                  />
+                ) : (
+                  <Button
+                    key={action.label}
+                    variant="outline"
+                    className="h-auto py-4 flex-col gap-2 hover:border-primary hover:bg-primary/5"
+                  >
+                    <action.icon className="h-5 w-5" />
+                    <span className="text-xs text-center">{action.label}</span>
+                  </Button>
+                )
               ))}
             </div>
           </div>

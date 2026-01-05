@@ -1,22 +1,11 @@
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-
-interface RiskCell {
-  probability: number;
-  severity: number;
-  count: number;
-}
-
-const mockRiskData: RiskCell[] = [
-  { probability: 1, severity: 4, count: 2 },
-  { probability: 2, severity: 3, count: 5 },
-  { probability: 2, severity: 4, count: 1 },
-  { probability: 3, severity: 2, count: 8 },
-  { probability: 3, severity: 3, count: 3 },
-  { probability: 4, severity: 1, count: 12 },
-  { probability: 4, severity: 2, count: 6 },
-  { probability: 1, severity: 2, count: 4 },
-];
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useRisks } from "@/hooks/usePrevention";
+import { RiskForm } from "@/components/prevention/RiskForm";
+import { useAuth } from "@/hooks/useAuth";
+import { Plus } from "lucide-react";
 
 const probabilityLabels = ["Muy Alta", "Alta", "Media", "Baja"];
 const severityLabels = ["Leve", "Moderada", "Grave", "Catastrófica"];
@@ -44,12 +33,42 @@ const riskLabels = {
 };
 
 export function RiskMatrix() {
+  const { data: risks, isLoading } = useRisks();
+  const { isAdmin } = useAuth();
+
+  // Build matrix data from real risks
   const getRiskCount = (prob: number, sev: number): number => {
-    const cell = mockRiskData.find(
-      (r) => r.probability === prob && r.severity === sev
-    );
-    return cell?.count || 0;
+    if (!risks) return 0;
+    return risks.filter(r => r.probability === prob && r.severity === sev).length;
   };
+
+  const getRisksForCell = (prob: number, sev: number) => {
+    if (!risks) return [];
+    return risks.filter(r => r.probability === prob && r.severity === sev);
+  };
+
+  // Loading skeleton
+  if (isLoading) {
+    return (
+      <div className="bg-card rounded-xl border border-border p-5">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <Skeleton className="h-5 w-40 mb-1" />
+            <Skeleton className="h-4 w-56" />
+          </div>
+          <div className="flex gap-2">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-4 w-16" />
+            ))}
+          </div>
+        </div>
+        <Skeleton className="h-64 w-full" />
+      </div>
+    );
+  }
+
+  const totalRisks = risks?.length || 0;
+  const criticalRisks = risks?.filter(r => r.residual_risk === 'critico' || r.residual_risk === 'alto').length || 0;
 
   return (
     <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
@@ -57,18 +76,30 @@ export function RiskMatrix() {
         <div>
           <h3 className="font-semibold text-foreground">Matriz de Riesgos</h3>
           <p className="text-sm text-muted-foreground">
-            IPER - Identificación de Peligros
+            IPER - {totalRisks} riesgos identificados • {criticalRisks} críticos/altos
           </p>
         </div>
-        <div className="flex gap-2">
-          {Object.entries(riskColors).map(([level, color]) => (
-            <div key={level} className="flex items-center gap-1.5">
-              <div className={cn("w-3 h-3 rounded", color.split(" ")[0])} />
-              <span className="text-xs text-muted-foreground capitalize">
-                {riskLabels[level as keyof typeof riskLabels]}
-              </span>
-            </div>
-          ))}
+        <div className="flex items-center gap-3">
+          <div className="flex gap-2">
+            {Object.entries(riskColors).map(([level, color]) => (
+              <div key={level} className="flex items-center gap-1.5">
+                <div className={cn("w-3 h-3 rounded", color.split(" ")[0])} />
+                <span className="text-xs text-muted-foreground capitalize">
+                  {riskLabels[level as keyof typeof riskLabels]}
+                </span>
+              </div>
+            ))}
+          </div>
+          {isAdmin && (
+            <RiskForm 
+              trigger={
+                <Button variant="outline" size="sm">
+                  <Plus className="h-4 w-4 mr-1" />
+                  Agregar
+                </Button>
+              }
+            />
+          )}
         </div>
       </div>
 
@@ -107,6 +138,7 @@ export function RiskMatrix() {
                   const prob = probIndex + 1;
                   const sev = sevIndex + 1;
                   const count = getRiskCount(prob, sev);
+                  const cellRisks = getRisksForCell(prob, sev);
                   const level = getRiskLevel(prob, sev);
 
                   return (
@@ -122,7 +154,7 @@ export function RiskMatrix() {
                           {count > 0 ? count : ""}
                         </div>
                       </TooltipTrigger>
-                      <TooltipContent>
+                      <TooltipContent className="max-w-xs">
                         <p className="font-medium">
                           {count} riesgo{count !== 1 ? "s" : ""}
                         </p>
@@ -132,6 +164,18 @@ export function RiskMatrix() {
                         <p className="text-xs mt-1">
                           Nivel: <span className="font-medium">{riskLabels[level]}</span>
                         </p>
+                        {cellRisks.length > 0 && (
+                          <ul className="text-xs mt-2 space-y-1">
+                            {cellRisks.slice(0, 3).map(risk => (
+                              <li key={risk.id} className="truncate">• {risk.title}</li>
+                            ))}
+                            {cellRisks.length > 3 && (
+                              <li className="text-muted-foreground">
+                                ...y {cellRisks.length - 3} más
+                              </li>
+                            )}
+                          </ul>
+                        )}
                       </TooltipContent>
                     </Tooltip>
                   );
@@ -148,6 +192,15 @@ export function RiskMatrix() {
           </div>
         </div>
       </div>
+
+      {/* Empty state */}
+      {totalRisks === 0 && (
+        <div className="mt-4 p-4 text-center border-t border-border">
+          <p className="text-sm text-muted-foreground">
+            No hay riesgos identificados. Agregue riesgos a la matriz IPER.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,8 +1,12 @@
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Clock, FileWarning, Users, ShieldAlert } from "lucide-react";
+import { AlertTriangle, Clock, FileWarning, Users, ShieldAlert, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAlerts, useIncidents } from "@/hooks/usePrevention";
+import { formatDistanceToNow, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
-interface Alert {
+interface AlertItem {
   id: string;
   type: "critical" | "warning" | "info";
   title: string;
@@ -11,45 +15,6 @@ interface Alert {
   module: string;
   icon: React.ElementType;
 }
-
-const mockAlerts: Alert[] = [
-  {
-    id: "1",
-    type: "critical",
-    title: "Accidente reportado",
-    description: "Incidente con lesión en área de producción",
-    timestamp: "Hace 2 horas",
-    module: "Prevención",
-    icon: ShieldAlert,
-  },
-  {
-    id: "2",
-    type: "warning",
-    title: "RIOHS por vencer",
-    description: "Documento vence en 15 días - Renovar",
-    timestamp: "Hace 5 horas",
-    module: "Prevención",
-    icon: FileWarning,
-  },
-  {
-    id: "3",
-    type: "warning",
-    title: "Capacitación pendiente",
-    description: "5 trabajadores sin inducción SST",
-    timestamp: "Hace 1 día",
-    module: "RRHH",
-    icon: Users,
-  },
-  {
-    id: "4",
-    type: "info",
-    title: "Reunión Comité",
-    description: "Comité Paritario agendado para mañana",
-    timestamp: "Hace 2 días",
-    module: "Comité",
-    icon: Clock,
-  },
-];
 
 const typeStyles = {
   critical: {
@@ -69,7 +34,91 @@ const typeStyles = {
   },
 };
 
+const severityToType = (severity: string): "critical" | "warning" | "info" => {
+  switch (severity) {
+    case 'catastrofico':
+    case 'grave':
+      return 'critical';
+    case 'moderado':
+      return 'warning';
+    default:
+      return 'info';
+  }
+};
+
 export function AlertsList() {
+  const { data: dbAlerts, isLoading: isLoadingAlerts } = useAlerts();
+  const { data: incidents, isLoading: isLoadingIncidents } = useIncidents();
+
+  // Generate alerts from incidents
+  const incidentAlerts: AlertItem[] = (incidents || [])
+    .filter(i => i.investigation_status !== 'cerrado')
+    .slice(0, 5)
+    .map(incident => ({
+      id: incident.id,
+      type: severityToType(incident.severity),
+      title: incident.title,
+      description: `${incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)} - ${incident.area}`,
+      timestamp: formatDistanceToNow(parseISO(incident.incident_date), { addSuffix: true, locale: es }),
+      module: "Prevención",
+      icon: incident.severity === 'grave' || incident.severity === 'catastrofico' ? ShieldAlert : AlertTriangle,
+    }));
+
+  // Combine with system alerts
+  const systemAlerts: AlertItem[] = (dbAlerts || []).map(alert => ({
+    id: alert.id,
+    type: alert.severity === 'critical' || alert.severity === 'error' ? 'critical' : 
+          alert.severity === 'warning' ? 'warning' : 'info',
+    title: alert.title,
+    description: alert.message,
+    timestamp: formatDistanceToNow(parseISO(alert.created_at), { addSuffix: true, locale: es }),
+    module: "Sistema",
+    icon: AlertTriangle,
+  }));
+
+  const alerts = [...incidentAlerts, ...systemAlerts].slice(0, 5);
+
+  // Loading skeleton
+  if (isLoadingAlerts || isLoadingIncidents) {
+    return (
+      <div className="bg-card rounded-xl border border-border p-5">
+        <div className="flex items-center gap-2 mb-4">
+          <Skeleton className="h-10 w-10 rounded-lg" />
+          <div>
+            <Skeleton className="h-5 w-32 mb-1" />
+            <Skeleton className="h-4 w-20" />
+          </div>
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-20 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  // No alerts
+  if (alerts.length === 0) {
+    return (
+      <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
+        <div className="flex items-center gap-2 mb-4">
+          <div className="p-2 rounded-lg bg-success/10">
+            <AlertTriangle className="h-5 w-5 text-success" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-foreground">Alertas Prioritarias</h3>
+            <p className="text-sm text-muted-foreground">Sin alertas</p>
+          </div>
+        </div>
+        <div className="p-8 text-center text-muted-foreground">
+          <p className="text-sm">No hay alertas activas en este momento</p>
+          <p className="text-xs mt-1">El sistema notificará incidentes y vencimientos</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
@@ -80,7 +129,7 @@ export function AlertsList() {
           <div>
             <h3 className="font-semibold text-foreground">Alertas Prioritarias</h3>
             <p className="text-sm text-muted-foreground">
-              {mockAlerts.filter((a) => a.type === "critical").length} críticas
+              {alerts.filter((a) => a.type === "critical").length} críticas
             </p>
           </div>
         </div>
@@ -90,7 +139,7 @@ export function AlertsList() {
       </div>
 
       <div className="space-y-3">
-        {mockAlerts.map((alert, index) => {
+        {alerts.map((alert, index) => {
           const Icon = alert.icon;
           const styles = typeStyles[alert.type];
 

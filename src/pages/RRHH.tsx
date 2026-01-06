@@ -17,11 +17,13 @@ import { EmployeeForm } from '@/components/rrhh/EmployeeForm';
 import { EmployeeCard } from '@/components/rrhh/EmployeeCard';
 import { OnboardingList } from '@/components/rrhh/OnboardingList';
 import { ContractForm } from '@/components/rrhh/ContractForm';
+import { EmployeeDetailSheet } from '@/components/rrhh/EmployeeDetailSheet';
 import { 
   useEmployees, 
   useOnboardingTasks, 
   useContracts, 
-  useRRHHStats 
+  useRRHHStats,
+  Employee
 } from '@/hooks/useRRHH';
 import { 
   Users, 
@@ -35,6 +37,8 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RRHH() {
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
@@ -180,6 +184,13 @@ export default function RRHH() {
                       key={emp.id} 
                       employee={emp}
                       onboardingTasks={getEmployeeOnboardingTasks(emp.id)}
+                      onViewDetails={(id) => {
+                        const employee = employees?.find(e => e.id === id);
+                        if (employee) {
+                          setSelectedEmployee(employee);
+                          setDetailSheetOpen(true);
+                        }
+                      }}
                     />
                   ))}
                   {filteredEmployees?.length === 0 && (
@@ -294,6 +305,12 @@ export default function RRHH() {
             </TabsContent>
           </Tabs>
         </div>
+
+        <EmployeeDetailSheet 
+          employee={selectedEmployee} 
+          open={detailSheetOpen} 
+          onOpenChange={setDetailSheetOpen} 
+        />
       </main>
     </div>
   );

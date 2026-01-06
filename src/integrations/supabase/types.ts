@@ -101,6 +101,60 @@ export type Database = {
         }
         Relationships: []
       }
+      contracts: {
+        Row: {
+          contract_type: string
+          created_at: string
+          document_id: string | null
+          employee_id: string
+          end_date: string | null
+          id: string
+          salary: number | null
+          start_date: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          contract_type?: string
+          created_at?: string
+          document_id?: string | null
+          employee_id: string
+          end_date?: string | null
+          id?: string
+          salary?: number | null
+          start_date: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          contract_type?: string
+          created_at?: string
+          document_id?: string | null
+          employee_id?: string
+          end_date?: string | null
+          id?: string
+          salary?: number | null
+          start_date?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       corrective_actions: {
         Row: {
           action_type: string
@@ -240,6 +294,102 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      employee_documents: {
+        Row: {
+          created_at: string
+          document_id: string
+          employee_id: string
+          id: string
+          required: boolean
+          signed_at: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          employee_id: string
+          id?: string
+          required?: boolean
+          signed_at?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          employee_id?: string
+          id?: string
+          required?: boolean
+          signed_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_documents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_documents_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      employee_health: {
+        Row: {
+          created_at: string
+          document_id: string | null
+          employee_id: string
+          exam_date: string
+          exam_type: string
+          id: string
+          next_exam_date: string | null
+          notes: string | null
+          result: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          document_id?: string | null
+          employee_id: string
+          exam_date: string
+          exam_type?: string
+          id?: string
+          next_exam_date?: string | null
+          notes?: string | null
+          result?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          document_id?: string | null
+          employee_id?: string
+          exam_date?: string
+          exam_type?: string
+          id?: string
+          next_exam_date?: string | null
+          notes?: string | null
+          result?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "employee_health_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "employee_health_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       employee_trainings: {
         Row: {
@@ -574,6 +724,50 @@ export type Database = {
           period_start?: string
         }
         Relationships: []
+      }
+      onboarding_tasks: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          due_date: string | null
+          employee_id: string
+          id: string
+          notes: string | null
+          status: string
+          task_name: string
+          task_type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          employee_id: string
+          id?: string
+          notes?: string | null
+          status?: string
+          task_name: string
+          task_type?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          due_date?: string | null
+          employee_id?: string
+          id?: string
+          notes?: string | null
+          status?: string
+          task_name?: string
+          task_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "onboarding_tasks_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {

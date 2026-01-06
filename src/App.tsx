@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Prevention from "./pages/Prevention";
+import RRHH from "./pages/RRHH";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Prevention />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/rrhh" 
+              element={
+                <ProtectedRoute>
+                  <RRHH />
                 </ProtectedRoute>
               } 
             />

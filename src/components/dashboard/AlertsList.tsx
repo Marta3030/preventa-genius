@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { AlertTriangle, Clock, FileWarning, Users, ShieldAlert, Loader2 } from "lucide-react";
+import { AlertTriangle, FileWarning, ShieldAlert, Heart, Stethoscope, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAlerts, useIncidents } from "@/hooks/usePrevention";
@@ -38,11 +38,42 @@ const severityToType = (severity: string): "critical" | "warning" | "info" => {
   switch (severity) {
     case 'catastrofico':
     case 'grave':
+    case 'critical':
+    case 'error':
       return 'critical';
     case 'moderado':
+    case 'warning':
       return 'warning';
     default:
       return 'info';
+  }
+};
+
+const getAlertIcon = (entityType?: string, severity?: string): React.ElementType => {
+  if (entityType === 'employee_health') {
+    return severity === 'critical' || severity === 'error' ? Heart : Stethoscope;
+  }
+  if (severity === 'critical' || severity === 'error') {
+    return ShieldAlert;
+  }
+  if (entityType === 'contract' || entityType === 'onboarding') {
+    return FileWarning;
+  }
+  return AlertTriangle;
+};
+
+const getModuleName = (entityType?: string): string => {
+  switch (entityType) {
+    case 'employee_health':
+      return 'Salud Ocupacional';
+    case 'incident':
+      return 'Prevención';
+    case 'contract':
+      return 'RRHH';
+    case 'onboarding':
+      return 'Onboarding';
+    default:
+      return 'Sistema';
   }
 };
 
@@ -50,12 +81,12 @@ export function AlertsList() {
   const { data: dbAlerts, isLoading: isLoadingAlerts } = useAlerts();
   const { data: incidents, isLoading: isLoadingIncidents } = useIncidents();
 
-  // Generate alerts from incidents
+  // Generate alerts from open incidents
   const incidentAlerts: AlertItem[] = (incidents || [])
     .filter(i => i.investigation_status !== 'cerrado')
-    .slice(0, 5)
+    .slice(0, 3)
     .map(incident => ({
-      id: incident.id,
+      id: `incident-${incident.id}`,
       type: severityToType(incident.severity),
       title: incident.title,
       description: `${incident.severity.charAt(0).toUpperCase() + incident.severity.slice(1)} - ${incident.area}`,
@@ -64,19 +95,19 @@ export function AlertsList() {
       icon: incident.severity === 'grave' || incident.severity === 'catastrofico' ? ShieldAlert : AlertTriangle,
     }));
 
-  // Combine with system alerts
+  // System alerts from database (including health alerts)
   const systemAlerts: AlertItem[] = (dbAlerts || []).map(alert => ({
     id: alert.id,
-    type: alert.severity === 'critical' || alert.severity === 'error' ? 'critical' : 
-          alert.severity === 'warning' ? 'warning' : 'info',
+    type: severityToType(alert.severity),
     title: alert.title,
     description: alert.message,
     timestamp: formatDistanceToNow(parseISO(alert.created_at), { addSuffix: true, locale: es }),
-    module: "Sistema",
-    icon: AlertTriangle,
+    module: getModuleName(alert.entity_type),
+    icon: getAlertIcon(alert.entity_type, alert.severity),
   }));
 
-  const alerts = [...incidentAlerts, ...systemAlerts].slice(0, 5);
+  // Combine and prioritize: system alerts first (health, etc.), then incidents
+  const alerts = [...systemAlerts, ...incidentAlerts].slice(0, 6);
 
   // Loading skeleton
   if (isLoadingAlerts || isLoadingIncidents) {
@@ -104,7 +135,7 @@ export function AlertsList() {
       <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
         <div className="flex items-center gap-2 mb-4">
           <div className="p-2 rounded-lg bg-success/10">
-            <AlertTriangle className="h-5 w-5 text-success" />
+            <CheckCircle2 className="h-5 w-5 text-success" />
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Alertas Prioritarias</h3>
@@ -113,23 +144,35 @@ export function AlertsList() {
         </div>
         <div className="p-8 text-center text-muted-foreground">
           <p className="text-sm">No hay alertas activas en este momento</p>
-          <p className="text-xs mt-1">El sistema notificará incidentes y vencimientos</p>
+          <p className="text-xs mt-1">El sistema notificará incidentes y vencimientos de salud</p>
         </div>
       </div>
     );
   }
 
+  const criticalCount = alerts.filter((a) => a.type === "critical").length;
+  const warningCount = alerts.filter((a) => a.type === "warning").length;
+
   return (
     <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <div className="p-2 rounded-lg bg-destructive/10">
-            <AlertTriangle className="h-5 w-5 text-destructive" />
+          <div className={cn(
+            "p-2 rounded-lg",
+            criticalCount > 0 ? "bg-destructive/10" : "bg-warning/10"
+          )}>
+            <AlertTriangle className={cn(
+              "h-5 w-5",
+              criticalCount > 0 ? "text-destructive" : "text-warning"
+            )} />
           </div>
           <div>
             <h3 className="font-semibold text-foreground">Alertas Prioritarias</h3>
             <p className="text-sm text-muted-foreground">
-              {alerts.filter((a) => a.type === "critical").length} críticas
+              {criticalCount > 0 && `${criticalCount} críticas`}
+              {criticalCount > 0 && warningCount > 0 && ' • '}
+              {warningCount > 0 && `${warningCount} alertas`}
+              {criticalCount === 0 && warningCount === 0 && `${alerts.length} informativas`}
             </p>
           </div>
         </div>
@@ -138,7 +181,7 @@ export function AlertsList() {
         </Button>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 max-h-[400px] overflow-y-auto">
         {alerts.map((alert, index) => {
           const Icon = alert.icon;
           const styles = typeStyles[alert.type];
@@ -162,18 +205,18 @@ export function AlertsList() {
                   </h4>
                   <span
                     className={cn(
-                      "text-[10px] font-medium px-1.5 py-0.5 rounded uppercase",
+                      "text-[10px] font-medium px-1.5 py-0.5 rounded uppercase flex-shrink-0",
                       styles.badge
                     )}
                   >
                     {alert.type === "critical" ? "Crítico" : alert.type === "warning" ? "Alerta" : "Info"}
                   </span>
                 </div>
-                <p className="text-xs text-muted-foreground line-clamp-1">
+                <p className="text-xs text-muted-foreground line-clamp-2">
                   {alert.description}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5">
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-[10px] text-muted-foreground font-medium">
                     {alert.module}
                   </span>
                   <span className="text-[10px] text-muted-foreground">•</span>

@@ -931,6 +931,7 @@ export type Database = {
         Args: { p_end_date?: string; p_start_date?: string }
         Returns: Json
       }
+      check_expiring_health_exams: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

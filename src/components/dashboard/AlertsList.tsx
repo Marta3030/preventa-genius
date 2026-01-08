@@ -186,8 +186,8 @@ export function AlertsList() {
             </p>
           </div>
         </div>
-        <Button variant="ghost" size="sm">
-          Ver todas
+        <Button variant="ghost" size="sm" asChild>
+          <a href="/alertas">Ver todas</a>
         </Button>
       </div>
 

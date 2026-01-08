@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Prevention from "./pages/Prevention";
 import RRHH from "./pages/RRHH";
+import Alerts from "./pages/Alerts";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -43,6 +44,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <RRHH />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/alertas" 
+              element={
+                <ProtectedRoute>
+                  <Alerts />
                 </ProtectedRoute>
               } 
             />

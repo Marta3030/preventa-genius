@@ -122,6 +122,7 @@ export interface Alert {
   entity_id?: string;
   read_by?: string[];
   dismissed_by?: string[];
+  expires_at?: string;
   created_at: string;
 }
 
@@ -444,6 +445,20 @@ export function useAlerts() {
   });
 }
 
+export function useAllAlerts() {
+  return useQuery({
+    queryKey: ['all-alerts'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('alerts')
+        .select('*')
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      return data as Alert[];
+    },
+  });
+}
+
 export function useCorrectiveActions() {
   return useQuery({
     queryKey: ['corrective-actions'],
@@ -525,10 +540,50 @@ export function useDismissAlert() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['all-alerts'] });
       toast.success('Alerta descartada');
     },
     onError: (error) => {
       toast.error('Error al descartar: ' + error.message);
+    },
+  });
+}
+
+export function useRestoreAlert() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (alertId: string) => {
+      // Get current dismissed_by array
+      const { data: alert, error: fetchError } = await supabase
+        .from('alerts')
+        .select('dismissed_by')
+        .eq('id', alertId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Remove user from dismissed_by
+      const newDismissed = (alert.dismissed_by || []).filter(
+        (id: string) => id !== user?.id
+      );
+
+      const { error } = await supabase
+        .from('alerts')
+        .update({ dismissed_by: newDismissed })
+        .eq('id', alertId);
+
+      if (error) throw error;
+      return alertId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['all-alerts'] });
+      toast.success('Alerta restaurada');
+    },
+    onError: (error) => {
+      toast.error('Error al restaurar: ' + error.message);
     },
   });
 }

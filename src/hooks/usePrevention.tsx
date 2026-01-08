@@ -497,6 +497,42 @@ export async function uploadDocument(file: File, path: string): Promise<string> 
   return urlData.publicUrl;
 }
 
+export function useDismissAlert() {
+  const queryClient = useQueryClient();
+  const { user } = useAuth();
+
+  return useMutation({
+    mutationFn: async (alertId: string) => {
+      // Get current dismissed_by array
+      const { data: alert, error: fetchError } = await supabase
+        .from('alerts')
+        .select('dismissed_by')
+        .eq('id', alertId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const currentDismissed = alert.dismissed_by || [];
+      const newDismissed = [...currentDismissed, user?.id];
+
+      const { error } = await supabase
+        .from('alerts')
+        .update({ dismissed_by: newDismissed })
+        .eq('id', alertId);
+
+      if (error) throw error;
+      return alertId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      toast.success('Alerta descartada');
+    },
+    onError: (error) => {
+      toast.error('Error al descartar: ' + error.message);
+    },
+  });
+}
+
 export function useUploadRIOHS() {
   const queryClient = useQueryClient();
   const { user } = useAuth();

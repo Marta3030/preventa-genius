@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils";
-import { AlertTriangle, FileWarning, ShieldAlert, Heart, Stethoscope, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, FileWarning, ShieldAlert, Heart, Stethoscope, CheckCircle2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAlerts, useIncidents } from "@/hooks/usePrevention";
+import { useAlerts, useIncidents, useDismissAlert } from "@/hooks/usePrevention";
 import { formatDistanceToNow, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
+import { toast } from "sonner";
 
 interface AlertItem {
   id: string;
@@ -80,6 +81,15 @@ const getModuleName = (entityType?: string): string => {
 export function AlertsList() {
   const { data: dbAlerts, isLoading: isLoadingAlerts } = useAlerts();
   const { data: incidents, isLoading: isLoadingIncidents } = useIncidents();
+  const dismissAlert = useDismissAlert();
+
+  const handleDismiss = (alertId: string, isSystemAlert: boolean) => {
+    if (isSystemAlert) {
+      dismissAlert.mutate(alertId);
+    } else {
+      toast.info('Los incidentes se cierran desde el módulo de Prevención');
+    }
+  };
 
   // Generate alerts from open incidents
   const incidentAlerts: AlertItem[] = (incidents || [])
@@ -185,12 +195,13 @@ export function AlertsList() {
         {alerts.map((alert, index) => {
           const Icon = alert.icon;
           const styles = typeStyles[alert.type];
+          const isSystemAlert = !alert.id.startsWith('incident-');
 
           return (
             <div
               key={alert.id}
               className={cn(
-                "flex items-start gap-3 p-3 rounded-lg border transition-all hover:shadow-sm cursor-pointer",
+                "flex items-start gap-3 p-3 rounded-lg border transition-all hover:shadow-sm group",
                 styles.bg
               )}
               style={{ animationDelay: `${index * 100}ms` }}
@@ -225,6 +236,18 @@ export function AlertsList() {
                   </span>
                 </div>
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDismiss(alert.id, isSystemAlert);
+                }}
+                disabled={dismissAlert.isPending}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
             </div>
           );
         })}

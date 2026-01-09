@@ -7,10 +7,12 @@ import {
 } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { Employee, useEmployeeHealth, useContracts, useOnboardingTasks } from '@/hooks/useRRHH';
+import { Employee, useEmployeeHealth, useContracts, useOnboardingTasks, useUnblockEmployee } from '@/hooks/useRRHH';
 import { HealthExamForm } from './HealthExamForm';
+import { toast } from 'sonner';
 import { 
   User, 
   Stethoscope, 
@@ -62,6 +64,17 @@ export function EmployeeDetailSheet({ employee, open, onOpenChange }: EmployeeDe
   const { data: healthRecords } = useEmployeeHealth(employee?.id);
   const { data: contracts } = useContracts(employee?.id);
   const { data: onboardingTasks } = useOnboardingTasks(employee?.id);
+  const unblockEmployee = useUnblockEmployee();
+
+  const handleUnblock = async () => {
+    if (!employee) return;
+    try {
+      await unblockEmployee.mutateAsync(employee.id);
+      toast.success('Empleado desbloqueado exitosamente');
+    } catch (error) {
+      toast.error('Error al desbloquear empleado');
+    }
+  };
 
   if (!employee) return null;
 
@@ -98,9 +111,20 @@ export function EmployeeDetailSheet({ employee, open, onOpenChange }: EmployeeDe
         </div>
 
         {employee.blocked_for_tasks && (
-          <div className="flex items-center gap-2 p-3 rounded-md bg-destructive/10 text-destructive text-sm mb-4">
-            <AlertTriangle className="h-4 w-4" />
-            <span>Bloqueado: {employee.blocked_reason || 'Capacitación pendiente'}</span>
+          <div className="flex items-center justify-between p-3 rounded-md bg-destructive/10 text-destructive text-sm mb-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-4 w-4" />
+              <span>Bloqueado: {employee.blocked_reason || 'Capacitación pendiente'}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleUnblock}
+              disabled={unblockEmployee.isPending}
+              className="text-destructive border-destructive/20 hover:bg-destructive/10"
+            >
+              {unblockEmployee.isPending ? 'Desbloqueando...' : 'Desbloquear'}
+            </Button>
           </div>
         )}
 

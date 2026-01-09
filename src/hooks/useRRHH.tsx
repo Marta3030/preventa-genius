@@ -277,6 +277,26 @@ export function useCreateHealthRecord() {
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['employee_health'] });
       queryClient.invalidateQueries({ queryKey: ['employee_health', variables.employee_id] });
+      // Also invalidate employees since the trigger might have blocked an employee
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
+      queryClient.invalidateQueries({ queryKey: ['employee', variables.employee_id] });
+    },
+  });
+}
+
+// Unblock employee mutation
+export function useUnblockEmployee() {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (employeeId: string) => {
+      const { data, error } = await supabase
+        .rpc('unblock_employee', { p_employee_id: employeeId });
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['employees'] });
     },
   });
 }

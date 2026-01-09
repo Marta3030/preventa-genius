@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/select';
 import { useCreateHealthRecord } from '@/hooks/useRRHH';
 import { toast } from 'sonner';
-import { Stethoscope, Plus } from 'lucide-react';
+import { Stethoscope, Plus, AlertTriangle } from 'lucide-react';
 
 interface HealthExamFormProps {
   employeeId: string;
@@ -141,6 +141,12 @@ export function HealthExamForm({ employeeId, employeeName }: HealthExamFormProps
                 ))}
               </SelectContent>
             </Select>
+            {result === 'no_apto' && (
+              <div className="flex items-center gap-2 p-2 rounded-md bg-destructive/10 text-destructive text-sm">
+                <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+                <span>El empleado será bloqueado automáticamente para tareas de riesgo.</span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">

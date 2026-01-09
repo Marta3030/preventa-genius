@@ -940,6 +940,7 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      unblock_employee: { Args: { p_employee_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin_general" | "admin_area" | "assistant"

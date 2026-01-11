@@ -101,6 +101,168 @@ export type Database = {
         }
         Relationships: []
       }
+      candidates: {
+        Row: {
+          applied_at: string
+          cover_letter: string | null
+          created_at: string
+          cv_url: string | null
+          email: string
+          id: string
+          name: string
+          notes: string | null
+          phone: string | null
+          rut: string | null
+          score: number | null
+          status: string | null
+          updated_at: string
+          vacancy_id: string | null
+        }
+        Insert: {
+          applied_at?: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email: string
+          id?: string
+          name: string
+          notes?: string | null
+          phone?: string | null
+          rut?: string | null
+          score?: number | null
+          status?: string | null
+          updated_at?: string
+          vacancy_id?: string | null
+        }
+        Update: {
+          applied_at?: string
+          cover_letter?: string | null
+          created_at?: string
+          cv_url?: string | null
+          email?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          phone?: string | null
+          rut?: string | null
+          score?: number | null
+          status?: string | null
+          updated_at?: string
+          vacancy_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_vacancy_id_fkey"
+            columns: ["vacancy_id"]
+            isOneToOne: false
+            referencedRelation: "vacancies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      committee_meetings: {
+        Row: {
+          agenda: string | null
+          attendees: string[] | null
+          created_at: string
+          created_by: string
+          id: string
+          location: string | null
+          meeting_date: string
+          minutes_doc_id: string | null
+          notes: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agenda?: string | null
+          attendees?: string[] | null
+          created_at?: string
+          created_by: string
+          id?: string
+          location?: string | null
+          meeting_date: string
+          minutes_doc_id?: string | null
+          notes?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agenda?: string | null
+          attendees?: string[] | null
+          created_at?: string
+          created_by?: string
+          id?: string
+          location?: string | null
+          meeting_date?: string
+          minutes_doc_id?: string | null
+          notes?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_meetings_minutes_doc_id_fkey"
+            columns: ["minutes_doc_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      committee_members: {
+        Row: {
+          created_at: string
+          employee_id: string | null
+          end_date: string | null
+          id: string
+          name: string
+          representation: string
+          role: string
+          start_date: string
+          status: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          employee_id?: string | null
+          end_date?: string | null
+          id?: string
+          name: string
+          representation: string
+          role: string
+          start_date: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          employee_id?: string | null
+          end_date?: string | null
+          id?: string
+          name?: string
+          representation?: string
+          role?: string
+          start_date?: string
+          status?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_members_employee_id_fkey"
+            columns: ["employee_id"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contracts: {
         Row: {
           contract_type: string
@@ -725,6 +887,118 @@ export type Database = {
         }
         Relationships: []
       }
+      management_actions: {
+        Row: {
+          action_type: string | null
+          approved_at: string | null
+          approved_by: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          document_id: string | null
+          due_date: string | null
+          id: string
+          notes: string | null
+          rejected_reason: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          document_id?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          rejected_reason?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_type?: string | null
+          approved_at?: string | null
+          approved_by?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          document_id?: string | null
+          due_date?: string | null
+          id?: string
+          notes?: string | null
+          rejected_reason?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "management_actions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      minutes_actions: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          description: string
+          due_date: string | null
+          id: string
+          meeting_id: string | null
+          notes: string | null
+          owner_id: string | null
+          owner_name: string | null
+          status: string | null
+          updated_at: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          description: string
+          due_date?: string | null
+          id?: string
+          meeting_id?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          description?: string
+          due_date?: string | null
+          id?: string
+          meeting_id?: string | null
+          notes?: string | null
+          owner_id?: string | null
+          owner_name?: string | null
+          status?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "minutes_actions_meeting_id_fkey"
+            columns: ["meeting_id"]
+            isOneToOne: false
+            referencedRelation: "committee_meetings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       onboarding_tasks: {
         Row: {
           completed_at: string | null
@@ -861,6 +1135,47 @@ export type Database = {
         }
         Relationships: []
       }
+      recruitment_pipeline: {
+        Row: {
+          candidate_id: string | null
+          created_at: string
+          evaluation_score: number | null
+          id: string
+          moved_at: string
+          moved_by: string
+          notes: string | null
+          stage: string
+        }
+        Insert: {
+          candidate_id?: string | null
+          created_at?: string
+          evaluation_score?: number | null
+          id?: string
+          moved_at?: string
+          moved_by: string
+          notes?: string | null
+          stage: string
+        }
+        Update: {
+          candidate_id?: string | null
+          created_at?: string
+          evaluation_score?: number | null
+          id?: string
+          moved_at?: string
+          moved_by?: string
+          notes?: string | null
+          stage?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruitment_pipeline_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       risks: {
         Row: {
           area: Database["public"]["Enums"]["area_type"]
@@ -978,6 +1293,57 @@ export type Database = {
           role?: Database["public"]["Enums"]["app_role"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      vacancies: {
+        Row: {
+          area: string
+          closes_at: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          id: string
+          positions_count: number | null
+          published_at: string | null
+          requirements: string | null
+          salary_range: string | null
+          status: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          area: string
+          closes_at?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          id?: string
+          positions_count?: number | null
+          published_at?: string | null
+          requirements?: string | null
+          salary_range?: string | null
+          status?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          area?: string
+          closes_at?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          id?: string
+          positions_count?: number | null
+          published_at?: string | null
+          requirements?: string | null
+          salary_range?: string | null
+          status?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }

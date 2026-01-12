@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { useAllAlerts, useRestoreAlert, useDismissAlert } from "@/hooks/usePrevention";
+import { useRunAlertScan, useAlertStats } from "@/hooks/useAlertEngine";
 import { formatDistanceToNow, parseISO, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -15,7 +16,10 @@ import {
   RotateCcw,
   Filter,
   Search,
-  CheckCircle2
+  CheckCircle2,
+  RefreshCw,
+  Bell,
+  Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,10 +94,12 @@ const getModuleName = (entityType?: string): string => {
 };
 
 export default function Alerts() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { data: alerts, isLoading } = useAllAlerts();
+  const { data: alertStats } = useAlertStats();
   const dismissAlert = useDismissAlert();
   const restoreAlert = useRestoreAlert();
+  const runAlertScan = useRunAlertScan();
   
   const [searchTerm, setSearchTerm] = useState("");
   const [severityFilter, setSeverityFilter] = useState<string>("all");
@@ -233,10 +239,23 @@ export default function Alerts() {
             <div>
               <h1 className="text-2xl font-bold text-foreground">Centro de Alertas</h1>
               <p className="text-sm text-muted-foreground">
-                Gestiona todas las alertas del sistema
+                Motor de alertas con escalamiento automático a Gerencia
               </p>
             </div>
-            <UserMenu />
+            <div className="flex items-center gap-3">
+              {isAdmin && (
+                <Button 
+                  onClick={() => runAlertScan.mutate()}
+                  disabled={runAlertScan.isPending}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <RefreshCw className={cn("h-4 w-4", runAlertScan.isPending && "animate-spin")} />
+                  Escanear Ahora
+                </Button>
+              )}
+              <UserMenu />
+            </div>
           </div>
         </header>
 

@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { hireCandidate } from '@/services/hiringService';
 
 export interface Vacancy {
   id: string;
@@ -223,11 +225,37 @@ export function useAdvanceCandidate() {
         .single();
       
       if (candidateError) throw candidateError;
+
+      // If hired, execute the full hiring workflow
+      if (stage === 'hired') {
+        const hiringResult = await hireCandidate(candidateId);
+        
+        if (hiringResult.success) {
+          toast.success(
+            `¡Contratación exitosa! Se creó el empleado, ${hiringResult.onboardingTasksCreated} tareas de onboarding y ${hiringResult.trainingsAssigned} capacitaciones asignadas.`
+          );
+        } else {
+          // Partial success - candidate marked as hired but some workflow steps failed
+          toast.warning(
+            `Candidato marcado como contratado, pero hubo errores: ${hiringResult.errors.join(', ')}`
+          );
+        }
+        
+        // Invalidate RRHH and Prevention caches
+        queryClient.invalidateQueries({ queryKey: ['employees'] });
+        queryClient.invalidateQueries({ queryKey: ['onboarding_tasks'] });
+        queryClient.invalidateQueries({ queryKey: ['contracts'] });
+        queryClient.invalidateQueries({ queryKey: ['employee-trainings'] });
+        queryClient.invalidateQueries({ queryKey: ['alerts'] });
+        queryClient.invalidateQueries({ queryKey: ['rrhh_stats'] });
+      }
+
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['candidates'] });
       queryClient.invalidateQueries({ queryKey: ['pipeline'] });
+      queryClient.invalidateQueries({ queryKey: ['reclutamiento_stats'] });
     }
   });
 }

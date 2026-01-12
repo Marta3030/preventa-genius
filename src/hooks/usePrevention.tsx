@@ -188,12 +188,25 @@ export function useCreateIncident() {
         .select()
         .single();
       if (error) throw error;
+      
+      // Process incident alert with escalation
+      const { processIncidentAlert } = await import('@/services/alertEngine');
+      await processIncidentAlert({
+        id: data.id,
+        title: data.title,
+        severity: data.severity,
+        area: data.area,
+        location: data.location || undefined,
+      });
+      
       return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['incidents'] });
       queryClient.invalidateQueries({ queryKey: ['prevention-kpis'] });
       queryClient.invalidateQueries({ queryKey: ['alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['all-alerts'] });
+      queryClient.invalidateQueries({ queryKey: ['alert-stats'] });
       toast.success('Incidente reportado exitosamente');
     },
     onError: (error) => {

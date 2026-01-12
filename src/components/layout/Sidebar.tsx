@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
 import logo from "@/assets/logo.png";
 import {
   LayoutDashboard,
@@ -22,11 +24,10 @@ interface NavItem {
   label: string;
   href: string;
   badge?: number;
-  active?: boolean;
 }
 
 const navItems: NavItem[] = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/", active: true },
+  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Shield, label: "Gerencia", href: "/gerencia" },
   { icon: Users, label: "RRHH", href: "/rrhh" },
   { icon: UserPlus, label: "Reclutamiento", href: "/reclutamiento" },
@@ -43,6 +44,8 @@ const bottomNavItems: NavItem[] = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+  const { signOut } = useAuth();
 
   return (
     <aside
@@ -78,7 +81,7 @@ export function Sidebar() {
           )}
         </div>
         {navItems.map((item) => (
-          <NavButton key={item.label} item={item} collapsed={collapsed} />
+          <NavButton key={item.label} item={item} collapsed={collapsed} isActive={location.pathname === item.href} />
         ))}
 
         <div className="pt-6">
@@ -89,13 +92,16 @@ export function Sidebar() {
           )}
         </div>
         {bottomNavItems.map((item) => (
-          <NavButton key={item.label} item={item} collapsed={collapsed} />
+          <NavButton key={item.label} item={item} collapsed={collapsed} isActive={location.pathname === item.href} />
         ))}
       </nav>
 
       {/* User section */}
       <div className="p-3 border-t border-sidebar-border">
-        <button className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors">
+        <button 
+          onClick={() => signOut()}
+          className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"
+        >
           <LogOut className="h-5 w-5" />
           {!collapsed && <span className="text-sm">Cerrar Sesión</span>}
         </button>
@@ -119,18 +125,20 @@ export function Sidebar() {
 function NavButton({
   item,
   collapsed,
+  isActive,
 }: {
   item: NavItem;
   collapsed: boolean;
+  isActive: boolean;
 }) {
   const Icon = item.icon;
 
   return (
-    <a
-      href={item.href}
+    <Link
+      to={item.href}
       className={cn(
         "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
-        item.active
+        isActive
           ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-safety"
           : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
       )}
@@ -143,7 +151,7 @@ function NavButton({
         <span
           className={cn(
             "flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold",
-            item.active
+            isActive
               ? "bg-sidebar-primary-foreground/20 text-sidebar-primary-foreground"
               : "bg-destructive text-destructive-foreground",
             collapsed && "absolute -top-1 -right-1"
@@ -159,6 +167,6 @@ function NavButton({
           {item.label}
         </div>
       )}
-    </a>
+    </Link>
   );
 }

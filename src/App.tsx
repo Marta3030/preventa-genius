@@ -11,6 +11,9 @@ import Prevention from "./pages/Prevention";
 import RRHH from "./pages/RRHH";
 import Alerts from "./pages/Alerts";
 import Operations from "./pages/Operations";
+import Gerencia from "./pages/Gerencia";
+import Reclutamiento from "./pages/Reclutamiento";
+import ComiteParitario from "./pages/ComiteParitario";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -61,6 +64,30 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Operations />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/gerencia" 
+              element={
+                <ProtectedRoute>
+                  <Gerencia />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/reclutamiento" 
+              element={
+                <ProtectedRoute>
+                  <Reclutamiento />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/comite" 
+              element={
+                <ProtectedRoute>
+                  <ComiteParitario />
                 </ProtectedRoute>
               } 
             />

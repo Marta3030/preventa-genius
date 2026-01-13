@@ -415,14 +415,62 @@ export type Database = {
           },
         ]
       }
+      document_versions: {
+        Row: {
+          created_at: string
+          document_id: string
+          file_hash: string | null
+          file_url: string
+          id: string
+          notes: string | null
+          status: string | null
+          uploaded_by: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          file_hash?: string | null
+          file_url: string
+          id?: string
+          notes?: string | null
+          status?: string | null
+          uploaded_by: string
+          version: number
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          file_hash?: string | null
+          file_url?: string
+          id?: string
+          notes?: string | null
+          status?: string | null
+          uploaded_by?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "document_versions_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       documents: {
         Row: {
           created_at: string
           document_type: Database["public"]["Enums"]["document_type"]
+          effective_date: string | null
           expiry_date: string | null
+          file_hash: string | null
           file_url: string
           id: string
           is_active: boolean
+          notify_all: boolean | null
+          owner_area: string | null
           registered_with_dt: boolean | null
           title: string
           updated_at: string
@@ -432,10 +480,14 @@ export type Database = {
         Insert: {
           created_at?: string
           document_type: Database["public"]["Enums"]["document_type"]
+          effective_date?: string | null
           expiry_date?: string | null
+          file_hash?: string | null
           file_url: string
           id?: string
           is_active?: boolean
+          notify_all?: boolean | null
+          owner_area?: string | null
           registered_with_dt?: boolean | null
           title: string
           updated_at?: string
@@ -445,10 +497,14 @@ export type Database = {
         Update: {
           created_at?: string
           document_type?: Database["public"]["Enums"]["document_type"]
+          effective_date?: string | null
           expiry_date?: string | null
+          file_hash?: string | null
           file_url?: string
           id?: string
           is_active?: boolean
+          notify_all?: boolean | null
+          owner_area?: string | null
           registered_with_dt?: boolean | null
           title?: string
           updated_at?: string
@@ -456,6 +512,56 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      dt_registration_tasks: {
+        Row: {
+          confirmed_at: string | null
+          created_at: string
+          created_by: string
+          document_id: string
+          dt_folio: string | null
+          export_package_url: string | null
+          id: string
+          notes: string | null
+          status: string | null
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          confirmed_at?: string | null
+          created_at?: string
+          created_by: string
+          document_id: string
+          dt_folio?: string | null
+          export_package_url?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          confirmed_at?: string | null
+          created_at?: string
+          created_by?: string
+          document_id?: string
+          dt_folio?: string | null
+          export_package_url?: string | null
+          id?: string
+          notes?: string | null
+          status?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dt_registration_tasks_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       employee_documents: {
         Row: {
@@ -1096,6 +1202,63 @@ export type Database = {
           {
             foreignKeyName: "operational_tasks_assigned_to_fkey"
             columns: ["assigned_to"]
+            isOneToOne: false
+            referencedRelation: "employees"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pending_signatures: {
+        Row: {
+          created_at: string
+          document_id: string
+          employee_id: string
+          id: string
+          reminder_sent_at: string | null
+          requested_at: string
+          requested_by: string
+          signature_method: string | null
+          signed_at: string | null
+          signer_ip: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_id: string
+          employee_id: string
+          id?: string
+          reminder_sent_at?: string | null
+          requested_at?: string
+          requested_by: string
+          signature_method?: string | null
+          signed_at?: string | null
+          signer_ip?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_id?: string
+          employee_id?: string
+          id?: string
+          reminder_sent_at?: string | null
+          requested_at?: string
+          requested_by?: string
+          signature_method?: string | null
+          signed_at?: string | null
+          signer_ip?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pending_signatures_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pending_signatures_employee_id_fkey"
+            columns: ["employee_id"]
             isOneToOne: false
             referencedRelation: "employees"
             referencedColumns: ["id"]

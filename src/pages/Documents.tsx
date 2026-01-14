@@ -13,11 +13,12 @@ import { SignatureCampaignDialog } from "@/components/documents/SignatureCampaig
 import { SignatureTracker } from "@/components/documents/SignatureTracker";
 import { DocumentVersionHistory } from "@/components/documents/DocumentVersionHistory";
 import { DTRegistrationPanel } from "@/components/documents/DTRegistrationPanel";
+import { MyPendingSignatures } from "@/components/documents/MyPendingSignatures";
 import { useAuth } from "@/hooks/useAuth";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-  FileText, Download, Eye, Send, Building, Check, Clock, FolderOpen
+  FileText, Download, Eye, Send, Building, Check, Clock, FolderOpen, PenTool
 } from "lucide-react";
 
 const documentTypeLabels: Record<string, string> = {
@@ -60,13 +61,18 @@ export default function Documents() {
         </header>
 
         <div className="p-6 space-y-6">
-          {/* Stats */}
-          <div className="grid grid-cols-4 gap-4">
-            <Card><CardHeader className="pb-2"><CardDescription>Total Documentos</CardDescription><CardTitle className="text-3xl">{stats?.totalDocuments || 0}</CardTitle></CardHeader></Card>
-            <Card><CardHeader className="pb-2"><CardDescription>Documentos Activos</CardDescription><CardTitle className="text-3xl text-success">{stats?.activeDocuments || 0}</CardTitle></CardHeader></Card>
-            <Card><CardHeader className="pb-2"><CardDescription>Firmas Pendientes</CardDescription><CardTitle className="text-3xl text-warning">{stats?.pendingSignatures || 0}</CardTitle></CardHeader></Card>
-            <Card><CardHeader className="pb-2"><CardDescription>Registros DT Pendientes</CardDescription><CardTitle className="text-3xl text-info">{stats?.pendingDTRegistrations || 0}</CardTitle></CardHeader></Card>
-          </div>
+          {/* My Pending Signatures - visible for all users */}
+          <MyPendingSignatures />
+
+          {/* Stats - visible for admins */}
+          {isAdmin && (
+            <div className="grid grid-cols-4 gap-4">
+              <Card><CardHeader className="pb-2"><CardDescription>Total Documentos</CardDescription><CardTitle className="text-3xl">{stats?.totalDocuments || 0}</CardTitle></CardHeader></Card>
+              <Card><CardHeader className="pb-2"><CardDescription>Documentos Activos</CardDescription><CardTitle className="text-3xl text-success">{stats?.activeDocuments || 0}</CardTitle></CardHeader></Card>
+              <Card><CardHeader className="pb-2"><CardDescription>Firmas Pendientes</CardDescription><CardTitle className="text-3xl text-warning">{stats?.pendingSignatures || 0}</CardTitle></CardHeader></Card>
+              <Card><CardHeader className="pb-2"><CardDescription>Registros DT Pendientes</CardDescription><CardTitle className="text-3xl text-info">{stats?.pendingDTRegistrations || 0}</CardTitle></CardHeader></Card>
+            </div>
+          )}
 
           <div className="grid grid-cols-3 gap-6">
             {/* Documents list */}

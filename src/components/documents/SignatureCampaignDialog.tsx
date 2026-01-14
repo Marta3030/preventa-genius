@@ -6,6 +6,9 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateSignatureCampaign } from "@/hooks/useDocuments";
 import { Send, Users, Building2, Loader2 } from "lucide-react";
+import type { Database } from "@/integrations/supabase/types";
+
+type AreaType = Database['public']['Enums']['area_type'];
 
 interface SignatureCampaignDialogProps {
   documentId: string;
@@ -14,7 +17,7 @@ interface SignatureCampaignDialogProps {
   onSuccess?: () => void;
 }
 
-const areaOptions = [
+const areaOptions: { value: AreaType; label: string }[] = [
   { value: 'gerencia', label: 'Gerencia' },
   { value: 'rrhh', label: 'RRHH' },
   { value: 'prevencion', label: 'Prevención' },
@@ -31,7 +34,7 @@ export function SignatureCampaignDialog({
 }: SignatureCampaignDialogProps) {
   const [open, setOpen] = useState(false);
   const [targetType, setTargetType] = useState<'all' | 'area'>('all');
-  const [selectedArea, setSelectedArea] = useState('');
+  const [selectedArea, setSelectedArea] = useState<AreaType | ''>('');
   
   const createCampaign = useCreateSignatureCampaign();
 
@@ -41,7 +44,7 @@ export function SignatureCampaignDialog({
     await createCampaign.mutateAsync({
       documentId,
       allEmployees: targetType === 'all',
-      byArea: targetType === 'area' ? selectedArea : undefined,
+      byArea: targetType === 'area' && selectedArea ? selectedArea : undefined,
     });
 
     setOpen(false);
@@ -111,7 +114,7 @@ export function SignatureCampaignDialog({
           {targetType === 'area' && (
             <div className="space-y-2">
               <Label htmlFor="select-area">Seleccionar área</Label>
-              <Select value={selectedArea} onValueChange={setSelectedArea}>
+              <Select value={selectedArea} onValueChange={(v) => setSelectedArea(v as AreaType)}>
                 <SelectTrigger>
                   <SelectValue placeholder="Elegir área..." />
                 </SelectTrigger>

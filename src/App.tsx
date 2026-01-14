@@ -14,6 +14,7 @@ import Operations from "./pages/Operations";
 import Gerencia from "./pages/Gerencia";
 import Reclutamiento from "./pages/Reclutamiento";
 import ComiteParitario from "./pages/ComiteParitario";
+import Documents from "./pages/Documents";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -88,6 +89,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <ComiteParitario />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/documentos" 
+              element={
+                <ProtectedRoute>
+                  <Documents />
                 </ProtectedRoute>
               } 
             />

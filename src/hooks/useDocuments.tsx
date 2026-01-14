@@ -369,7 +369,7 @@ export function useCreateSignatureCampaign() {
       documentId: string;
       employeeIds?: string[];
       allEmployees?: boolean;
-      byArea?: string;
+      byArea?: Database['public']['Enums']['area_type'];
     }) => {
       let targetEmployees: string[] = [];
       

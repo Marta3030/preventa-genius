@@ -1,5 +1,6 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -18,7 +19,8 @@ import {
   LineChart,
   Line,
 } from "recharts";
-import { FileCheck, FileX, Clock, FileText, Users, TrendingUp } from "lucide-react";
+import { FileCheck, FileX, Clock, FileText, Users, TrendingUp, Download, Loader2 } from "lucide-react";
+import { exportSignatureStatsPDF } from "@/lib/pdfExporter";
 
 interface SignatureStats {
   total: number;
@@ -141,6 +143,7 @@ function useSignatureStats() {
 
 export function DocumentStatsDashboard() {
   const { data: stats, isLoading } = useSignatureStats();
+  const [isExporting, setIsExporting] = useState(false);
 
   const pieData = useMemo(() => {
     if (!stats) return [];
@@ -151,6 +154,16 @@ export function DocumentStatsDashboard() {
   }, [stats]);
 
   const completionRate = stats?.total ? Math.round((stats.signed / stats.total) * 100) : 0;
+
+  const handleExportPDF = async () => {
+    if (!stats) return;
+    setIsExporting(true);
+    try {
+      await exportSignatureStatsPDF(stats);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -182,6 +195,18 @@ export function DocumentStatsDashboard() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Header with export button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-lg font-semibold">Estadísticas de Firmas</h2>
+          <p className="text-sm text-muted-foreground">Vista general del estado de campañas</p>
+        </div>
+        <Button onClick={handleExportPDF} disabled={isExporting}>
+          {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+          Exportar PDF
+        </Button>
+      </div>
+
       {/* Summary Cards */}
       <div className="grid grid-cols-4 gap-4">
         <Card>

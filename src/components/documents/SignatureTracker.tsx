@@ -7,7 +7,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { usePendingSignatures } from "@/hooks/useDocuments";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { PenTool, Check, Clock, Send, Download } from "lucide-react";
+import { PenTool, Check, Clock, Send, Download, FileText, Loader2 } from "lucide-react";
+import { exportSignaturePDF } from "@/lib/pdfExporter";
+import { useState } from "react";
 
 interface SignatureTrackerProps {
   documentId: string;
@@ -16,6 +18,8 @@ interface SignatureTrackerProps {
 
 export function SignatureTracker({ documentId, documentTitle }: SignatureTrackerProps) {
   const { data: signatures, isLoading } = usePendingSignatures(documentId);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingCSV, setIsExportingCSV] = useState(false);
 
   if (isLoading) {
     return (
@@ -38,30 +42,47 @@ export function SignatureTracker({ documentId, documentTitle }: SignatureTracker
   const pendingCount = totalSignatures - signedCount;
   const progressPercent = totalSignatures > 0 ? (signedCount / totalSignatures) * 100 : 0;
 
-  const exportSignaturesCSV = () => {
+  const exportSignaturesCSV = async () => {
     if (!signatures || signatures.length === 0) return;
+    setIsExportingCSV(true);
     
-    const headers = ['Nombre', 'RUT', 'Área', 'Cargo', 'Estado', 'Fecha Firma', 'Método'];
-    const rows = signatures.map(sig => [
-      sig.employee?.name || '',
-      sig.employee?.rut || '',
-      sig.employee?.area || '',
-      sig.employee?.position || '',
-      sig.status === 'signed' ? 'Firmado' : 'Pendiente',
-      sig.signed_at ? format(parseISO(sig.signed_at), 'dd/MM/yyyy HH:mm') : '',
-      sig.signature_method || '',
-    ]);
+    try {
+      const headers = ['Nombre', 'RUT', 'Área', 'Cargo', 'Estado', 'Fecha Firma', 'Método'];
+      const rows = signatures.map(sig => [
+        sig.employee?.name || '',
+        sig.employee?.rut || '',
+        sig.employee?.area || '',
+        sig.employee?.position || '',
+        sig.status === 'signed' ? 'Firmado' : 'Pendiente',
+        sig.signed_at ? format(parseISO(sig.signed_at), 'dd/MM/yyyy HH:mm') : '',
+        sig.signature_method || '',
+      ]);
+      
+      const csvContent = [headers, ...rows]
+        .map(row => row.join(','))
+        .join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `firmas_${documentTitle.replace(/\s/g, '_')}.csv`;
+      link.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExportingCSV(false);
+    }
+  };
+
+  const exportSignaturesPDF = async () => {
+    if (!signatures || signatures.length === 0) return;
+    setIsExportingPDF(true);
     
-    const csvContent = [headers, ...rows]
-      .map(row => row.join(','))
-      .join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `firmas_${documentTitle.replace(/\s/g, '_')}.csv`;
-    link.click();
+    try {
+      await exportSignaturePDF(documentTitle, signatures);
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
 
   return (
@@ -73,10 +94,16 @@ export function SignatureTracker({ documentId, documentTitle }: SignatureTracker
             Estado de Firmas
           </CardTitle>
           {totalSignatures > 0 && (
-            <Button variant="outline" size="sm" onClick={exportSignaturesCSV}>
-              <Download className="h-4 w-4 mr-2" />
-              Exportar CSV
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={exportSignaturesCSV} disabled={isExportingCSV}>
+                {isExportingCSV ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                CSV
+              </Button>
+              <Button variant="default" size="sm" onClick={exportSignaturesPDF} disabled={isExportingPDF}>
+                {isExportingPDF ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
+                PDF
+              </Button>
+            </div>
           )}
         </div>
       </CardHeader>

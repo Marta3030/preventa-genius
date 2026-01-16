@@ -6,6 +6,7 @@ import { AlertsList } from "@/components/dashboard/AlertsList";
 import { RIOHSCard } from "@/components/dashboard/RIOHSCard";
 import { AreaStatusGrid } from "@/components/dashboard/AreaStatusGrid";
 import { AccidentTrendChart } from "@/components/dashboard/AccidentTrendChart";
+import { QuickActions } from "@/components/dashboard/QuickActions";
 import { UserMenu } from "@/components/layout/UserMenu";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -253,46 +254,8 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Quick Actions */}
-          <div className="bg-card rounded-xl border border-border p-5 animate-fade-in">
-            <h3 className="font-semibold text-foreground mb-4">
-              Acciones Rápidas
-            </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-              {[
-                { label: "Reglamento Interno", icon: FileCheck },
-                { label: "Informe Gerencial", icon: Download },
-                { label: "Matriz de Riesgos", icon: AlertTriangle },
-                { label: "Actas Comité", icon: Calendar },
-                { label: "Nueva Inspección", icon: FileCheck },
-                { label: "Reportar Incidente", icon: AlertTriangle, isIncident: true },
-              ].map((action) => (
-                action.isIncident ? (
-                  <IncidentForm
-                    key={action.label}
-                    trigger={
-                      <Button
-                        variant="outline"
-                        className="h-auto py-4 flex-col gap-2 hover:border-primary hover:bg-primary/5"
-                      >
-                        <action.icon className="h-5 w-5" />
-                        <span className="text-xs text-center">{action.label}</span>
-                      </Button>
-                    }
-                  />
-                ) : (
-                  <Button
-                    key={action.label}
-                    variant="outline"
-                    className="h-auto py-4 flex-col gap-2 hover:border-primary hover:bg-primary/5"
-                  >
-                    <action.icon className="h-5 w-5" />
-                    <span className="text-xs text-center">{action.label}</span>
-                  </Button>
-                )
-              ))}
-            </div>
-          </div>
+          {/* Quick Actions - Now with full functionality */}
+          <QuickActions />
         </div>
       </main>
     </div>

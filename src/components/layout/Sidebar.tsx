@@ -39,7 +39,7 @@ const navItems: NavItem[] = [
 const bottomNavItems: NavItem[] = [
   { icon: FileText, label: "Documentos", href: "/documentos" },
   { icon: AlertTriangle, label: "Alertas", href: "/alertas", badge: 5 },
-  { icon: Settings, label: "Configuración", href: "/settings" },
+  { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 
 export function Sidebar() {

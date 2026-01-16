@@ -15,6 +15,7 @@ import Gerencia from "./pages/Gerencia";
 import Reclutamiento from "./pages/Reclutamiento";
 import ComiteParitario from "./pages/ComiteParitario";
 import Documents from "./pages/Documents";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -97,6 +98,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Documents />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/configuracion" 
+              element={
+                <ProtectedRoute>
+                  <Settings />
                 </ProtectedRoute>
               } 
             />

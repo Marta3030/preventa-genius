@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { useDTRegistrationTasks, useCreateDTRegistration, useUpdateDTRegistration, generateDTExportPackage } from "@/hooks/useDocuments";
+import { useDTRegistrationTasks, useCreateDTRegistration, useUpdateDTRegistration, generateDTExportPackage, usePendingSignatures, useDocument } from "@/hooks/useDocuments";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { toast } from "sonner";
+import { exportDTPackagePDF } from "@/lib/pdfExporter";
 import { 
   Building, 
   FileText, 
@@ -39,8 +40,11 @@ export function DTRegistrationPanel({ documentId, documentTitle, isRegistered }:
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [dtFolio, setDtFolio] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
   
   const { data: tasks, isLoading } = useDTRegistrationTasks(documentId);
+  const { data: docData } = useDocument(documentId);
+  const { data: signatures } = usePendingSignatures(documentId);
   const createTask = useCreateDTRegistration();
   const updateTask = useUpdateDTRegistration();
 
@@ -48,6 +52,28 @@ export function DTRegistrationPanel({ documentId, documentTitle, isRegistered }:
 
   const handleCreateTask = async () => {
     await createTask.mutateAsync({ documentId });
+  };
+
+  const handleExportPackagePDF = async () => {
+    if (!docData || !signatures) return;
+    setIsExportingPDF(true);
+    try {
+      await exportDTPackagePDF(
+        {
+          title: docData.title,
+          version: docData.version,
+          file_hash: docData.file_hash,
+          effective_date: docData.effective_date,
+          expiry_date: docData.expiry_date,
+        },
+        signatures
+      );
+      toast.success('PDF del paquete DT generado');
+    } catch (error) {
+      toast.error('Error al generar PDF: ' + (error as Error).message);
+    } finally {
+      setIsExportingPDF(false);
+    }
   };
 
   const handleExportPackage = async () => {
@@ -78,22 +104,26 @@ export function DTRegistrationPanel({ documentId, documentTitle, isRegistered }:
       const csvUrl = URL.createObjectURL(csvBlob);
       
       // Download metadata
-      const metadataLink = document.createElement('a');
+      const metadataLink = window.document.createElement('a');
       metadataLink.href = metadataUrl;
       metadataLink.download = 'metadata.json';
       metadataLink.click();
+      URL.revokeObjectURL(metadataUrl);
       
       // Download signatures CSV
       setTimeout(() => {
-        const csvLink = document.createElement('a');
+        const csvLink = window.document.createElement('a');
         csvLink.href = csvUrl;
         csvLink.download = 'firmas.csv';
         csvLink.click();
+        URL.revokeObjectURL(csvUrl);
       }, 500);
       
       // Download document PDF
       setTimeout(() => {
-        window.open(exportData.documentData.file_url, '_blank');
+        if (exportData.documentData.file_url) {
+          window.open(exportData.documentData.file_url, '_blank');
+        }
       }, 1000);
       
       // Update task status
@@ -111,6 +141,7 @@ export function DTRegistrationPanel({ documentId, documentTitle, isRegistered }:
       setIsExporting(false);
     }
   };
+
 
   const handleMarkSubmitted = async () => {
     if (!currentTask) return;
@@ -234,21 +265,35 @@ export function DTRegistrationPanel({ documentId, documentTitle, isRegistered }:
             {/* Action buttons based on status */}
             <div className="flex flex-wrap gap-3">
               {currentTask.status === 'pending' && (
-                <Button onClick={handleExportPackage} disabled={isExporting}>
-                  {isExporting ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Package className="h-4 w-4 mr-2" />
-                  )}
-                  Generar Paquete Exportación
-                </Button>
+                <>
+                  <Button onClick={handleExportPackage} disabled={isExporting}>
+                    {isExporting ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Package className="h-4 w-4 mr-2" />
+                    )}
+                    Generar Paquete Completo
+                  </Button>
+                  <Button variant="outline" onClick={handleExportPackagePDF} disabled={isExportingPDF}>
+                    {isExportingPDF ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <FileText className="h-4 w-4 mr-2" />
+                    )}
+                    Exportar PDF
+                  </Button>
+                </>
               )}
 
               {currentTask.status === 'exported' && (
                 <>
                   <Button variant="outline" onClick={handleExportPackage} disabled={isExporting}>
-                    <Download className="h-4 w-4 mr-2" />
+                    {isExporting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
                     Descargar Paquete
+                  </Button>
+                  <Button variant="outline" onClick={handleExportPackagePDF} disabled={isExportingPDF}>
+                    {isExportingPDF ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <FileText className="h-4 w-4 mr-2" />}
+                    PDF
                   </Button>
                   <Button onClick={handleMarkSubmitted} disabled={updateTask.isPending}>
                     <Send className="h-4 w-4 mr-2" />

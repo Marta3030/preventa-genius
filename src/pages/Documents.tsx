@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAllDocuments, useDocumentStats } from "@/hooks/useDocuments";
+import { useAllDocuments, useDocumentStats, useDeleteDocument } from "@/hooks/useDocuments";
 import { DocumentUploadDialog } from "@/components/documents/DocumentUploadDialog";
 import { SignatureCampaignDialog } from "@/components/documents/SignatureCampaignDialog";
 import { SignatureTracker } from "@/components/documents/SignatureTracker";
@@ -18,7 +18,18 @@ import { useAuth } from "@/hooks/useAuth";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import {
-  FileText, Download, Eye, Send, Building, Check, Clock, FolderOpen, BarChart3
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  FileText, Download, Eye, Send, Building, Check, Clock, FolderOpen, BarChart3, Trash2, Loader2
 } from "lucide-react";
 
 const documentTypeLabels: Record<string, string> = {
@@ -34,10 +45,16 @@ export default function Documents() {
   const { isAdmin } = useAuth();
   const { data: documents, isLoading } = useAllDocuments();
   const { data: stats } = useDocumentStats();
+  const deleteDocument = useDeleteDocument();
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("documents");
 
   const selectedDocument = documents?.find(d => d.id === selectedDoc);
+
+  const handleDeleteDocument = async (documentId: string) => {
+    await deleteDocument.mutateAsync(documentId);
+    setSelectedDoc(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -160,10 +177,42 @@ export default function Documents() {
                                 <Download className="h-4 w-4 mr-2" />Descargar
                               </Button>
                               {isAdmin && (
-                                <SignatureCampaignDialog
-                                  documentId={selectedDocument.id}
-                                  documentTitle={selectedDocument.title}
-                                />
+                                <>
+                                  <SignatureCampaignDialog
+                                    documentId={selectedDocument.id}
+                                    documentTitle={selectedDocument.title}
+                                  />
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button variant="destructive" size="sm">
+                                        <Trash2 className="h-4 w-4 mr-2" />Eliminar
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>¿Eliminar documento?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Esta acción no se puede deshacer. Se eliminarán todas las firmas pendientes, 
+                                          acuses de recibo y tareas de registro DT asociadas a este documento.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                        <AlertDialogAction 
+                                          onClick={() => handleDeleteDocument(selectedDocument.id)}
+                                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        >
+                                          {deleteDocument.isPending ? (
+                                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          ) : (
+                                            <Trash2 className="h-4 w-4 mr-2" />
+                                          )}
+                                          Eliminar
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                </>
                               )}
                             </div>
                           </div>

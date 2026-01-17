@@ -28,18 +28,14 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: AlertTriangle, label: "Alertas", href: "/alertas", badge: 5 },
   { icon: Shield, label: "Gerencia", href: "/gerencia" },
+  { icon: FileText, label: "Documentos", href: "/documentos" },
   { icon: Users, label: "RRHH", href: "/rrhh" },
   { icon: UserPlus, label: "Reclutamiento", href: "/reclutamiento" },
   { icon: HardHat, label: "Prevención", href: "/prevencion", badge: 3 },
   { icon: Wrench, label: "Operaciones", href: "/operaciones" },
   { icon: Users2, label: "Comité Paritario", href: "/comite" },
-];
-
-const bottomNavItems: NavItem[] = [
-  { icon: FileText, label: "Documentos", href: "/documentos" },
-  { icon: AlertTriangle, label: "Alertas", href: "/alertas", badge: 5 },
-  { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 
 export function Sidebar() {
@@ -83,21 +79,27 @@ export function Sidebar() {
         {navItems.map((item) => (
           <NavButton key={item.label} item={item} collapsed={collapsed} isActive={location.pathname === item.href} />
         ))}
-
-        <div className="pt-6">
-          {!collapsed && (
-            <span className="px-3 text-xs font-medium text-sidebar-foreground/50 uppercase tracking-wider">
-              Sistema
-            </span>
-          )}
-        </div>
-        {bottomNavItems.map((item) => (
-          <NavButton key={item.label} item={item} collapsed={collapsed} isActive={location.pathname === item.href} />
-        ))}
       </nav>
 
       {/* User section */}
-      <div className="p-3 border-t border-sidebar-border">
+      <div className="p-3 border-t border-sidebar-border space-y-1">
+        <Link
+          to="/configuracion"
+          className={cn(
+            "flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative",
+            location.pathname === "/configuracion"
+              ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-safety"
+              : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          )}
+        >
+          <Settings className="h-5 w-5 flex-shrink-0" />
+          {!collapsed && <span className="text-sm font-medium">Configuración</span>}
+          {collapsed && (
+            <div className="absolute left-full ml-2 px-2 py-1 bg-sidebar rounded-md text-sidebar-foreground text-sm whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              Configuración
+            </div>
+          )}
+        </Link>
         <button 
           onClick={() => signOut()}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-colors"

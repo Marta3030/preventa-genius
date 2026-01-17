@@ -568,6 +568,51 @@ export function useUpdateDTRegistration() {
   });
 }
 
+// === Delete Document ===
+export function useDeleteDocument() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (documentId: string) => {
+      // First delete related records
+      await supabase
+        .from('pending_signatures')
+        .delete()
+        .eq('document_id', documentId);
+      
+      await supabase
+        .from('document_acknowledgements')
+        .delete()
+        .eq('document_id', documentId);
+      
+      await supabase
+        .from('dt_registration_tasks')
+        .delete()
+        .eq('document_id', documentId);
+      
+      // Then delete the document
+      const { error } = await supabase
+        .from('documents')
+        .delete()
+        .eq('id', documentId);
+      
+      if (error) throw error;
+      return documentId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['all-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['active-documents'] });
+      queryClient.invalidateQueries({ queryKey: ['document-stats'] });
+      queryClient.invalidateQueries({ queryKey: ['riohs'] });
+      queryClient.invalidateQueries({ queryKey: ['documents'] });
+      toast.success('Documento eliminado correctamente');
+    },
+    onError: (error) => {
+      toast.error('Error al eliminar documento: ' + error.message);
+    },
+  });
+}
+
 // === Document Statistics ===
 export function useDocumentStats() {
   return useQuery({

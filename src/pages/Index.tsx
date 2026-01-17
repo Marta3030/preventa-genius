@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAuth } from "@/hooks/useAuth";
 import { usePreventionKPIs, useIncidents, useCorrectiveActions } from "@/hooks/usePrevention";
-import { IncidentForm } from "@/components/prevention/IncidentForm";
 import {
   HardHat,
   AlertTriangle,
@@ -100,8 +99,6 @@ const Index = () => {
                 <Download className="h-4 w-4 mr-2" />
                 Exportar
               </Button>
-
-              <IncidentForm />
 
               <UserMenu />
             </div>

@@ -12,6 +12,7 @@ import { IncidentForm } from "@/components/prevention/IncidentForm";
 import { RiskForm } from "@/components/prevention/RiskForm";
 import { RIOHSCard } from "@/components/dashboard/RIOHSCard";
 import { RiskMatrix } from "@/components/dashboard/RiskMatrix";
+import { IntegralDashboard } from "@/components/integral/IntegralDashboard";
 import { useAuth } from "@/hooks/useAuth";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
@@ -25,6 +26,7 @@ import {
   Clock,
   XCircle,
   Plus,
+  Layers,
 } from "lucide-react";
 
 const severityColors: Record<string, string> = {
@@ -93,7 +95,11 @@ export default function Prevention() {
 
         <div className="p-6">
           <Tabs defaultValue="incidents" className="space-y-6">
-            <TabsList className="grid w-full max-w-2xl grid-cols-5">
+            <TabsList className="grid w-full max-w-3xl grid-cols-6">
+              <TabsTrigger value="integral" className="flex items-center gap-2">
+                <Layers className="h-4 w-4" />
+                Integral
+              </TabsTrigger>
               <TabsTrigger value="incidents" className="flex items-center gap-2">
                 <AlertTriangle className="h-4 w-4" />
                 Incidentes
@@ -115,6 +121,11 @@ export default function Prevention() {
                 RIOHS
               </TabsTrigger>
             </TabsList>
+
+            {/* MÓDULO INTEGRAL */}
+            <TabsContent value="integral">
+              <IntegralDashboard />
+            </TabsContent>
 
             {/* INCIDENTES */}
             <TabsContent value="incidents" className="space-y-6">

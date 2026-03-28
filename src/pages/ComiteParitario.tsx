@@ -208,8 +208,6 @@ export default function ComiteParitario() {
               <p className="text-muted-foreground">Gestión del Comité Paritario de Higiene y Seguridad</p>
             </div>
             <div className="flex gap-2">
-              {isAdmin && (
-                <>
                   <Dialog open={isMemberOpen} onOpenChange={setIsMemberOpen}>
                     <DialogTrigger asChild>
                       <Button variant="outline">

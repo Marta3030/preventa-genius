@@ -380,12 +380,10 @@ export default function Prevention() {
                       <CardTitle>Capacitaciones SST</CardTitle>
                       <CardDescription>Programas de formación y cumplimiento legal</CardDescription>
                     </div>
-                    {isAdmin && (
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nueva Capacitación
-                      </Button>
-                    )}
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nueva Capacitación
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>

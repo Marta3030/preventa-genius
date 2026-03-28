@@ -470,7 +470,7 @@ export default function ComiteParitario() {
                               </Badge>
                             </TableCell>
                             <TableCell className="text-right space-x-2">
-                              {meeting.status === 'scheduled' && isAdmin && (
+                              {meeting.status === 'scheduled' && (
                                 <Button
                                   size="sm"
                                   variant="outline"

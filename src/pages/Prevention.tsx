@@ -441,12 +441,10 @@ export default function Prevention() {
                       <CardTitle>Inspecciones de Seguridad</CardTitle>
                       <CardDescription>Programa de inspecciones y hallazgos</CardDescription>
                     </div>
-                    {isAdmin && (
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nueva Inspección
-                      </Button>
-                    )}
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nueva Inspección
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>

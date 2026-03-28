@@ -542,6 +542,21 @@ export default function Reclutamiento() {
             <DialogTitle>Agregar Candidato</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {activeVacancies.length > 1 && (
+              <div className="space-y-2">
+                <Label>Vacante</Label>
+                <Select value={selectedVacancy || ''} onValueChange={setSelectedVacancy}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar vacante" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeVacancies.map(v => (
+                      <SelectItem key={v.id} value={v.id}>{v.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Nombre completo</Label>
               <Input

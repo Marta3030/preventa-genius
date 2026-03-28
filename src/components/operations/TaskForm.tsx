@@ -83,7 +83,7 @@ export function TaskForm() {
         area,
         priority,
         risk_level: riskLevel,
-        assigned_to: assignedTo || null,
+        assigned_to: assignedTo && assignedTo !== 'none' ? assignedTo : null,
         due_date: dueDate || null,
       });
 

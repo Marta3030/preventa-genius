@@ -176,16 +176,14 @@ export default function Prevention() {
                     <div className="text-center py-12 text-muted-foreground">
                       <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No hay incidentes registrados</p>
-                      {isAdmin && (
-                        <IncidentForm 
-                          trigger={
-                            <Button variant="outline" className="mt-4">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Reportar primer incidente
-                            </Button>
-                          }
-                        />
-                      )}
+                      <IncidentForm 
+                        trigger={
+                          <Button variant="outline" className="mt-4">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Reportar primer incidente
+                          </Button>
+                        }
+                      />
                     </div>
                   ) : (
                     <Table>

@@ -285,7 +285,7 @@ export default function Reclutamiento() {
                   </div>
                 </DialogContent>
               </Dialog>
-            )}
+            </div>
           </div>
 
           {/* Stats */}

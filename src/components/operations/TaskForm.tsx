@@ -83,7 +83,7 @@ export function TaskForm() {
         area,
         priority,
         risk_level: riskLevel,
-        assigned_to: assignedTo || null,
+        assigned_to: assignedTo && assignedTo !== 'none' ? assignedTo : null,
         due_date: dueDate || null,
       });
 
@@ -212,7 +212,7 @@ export function TaskForm() {
                 <SelectValue placeholder="Seleccionar empleado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sin asignar</SelectItem>
+                <SelectItem value="none">Sin asignar</SelectItem>
                 {employees?.map((emp) => (
                   <SelectItem 
                     key={emp.id} 

@@ -196,7 +196,18 @@ export default function Reclutamiento() {
               </h1>
               <p className="text-muted-foreground">Gestión de vacantes y candidatos</p>
             </div>
-            {isAdmin && (
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => {
+                if (activeVacancies.length > 0) {
+                  setSelectedVacancy(activeVacancies[0].id);
+                  setIsCandidateOpen(true);
+                } else {
+                  toast({ title: 'Primero debe crear y publicar una vacante', variant: 'destructive' });
+                }
+              }}>
+                <UserPlus className="h-4 w-4 mr-2" />
+                Nuevo Candidato
+              </Button>
               <Dialog open={isVacancyOpen} onOpenChange={setIsVacancyOpen}>
                 <DialogTrigger asChild>
                   <Button>
@@ -274,7 +285,7 @@ export default function Reclutamiento() {
                   </div>
                 </DialogContent>
               </Dialog>
-            )}
+            </div>
           </div>
 
           {/* Stats */}
@@ -531,6 +542,21 @@ export default function Reclutamiento() {
             <DialogTitle>Agregar Candidato</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            {activeVacancies.length > 1 && (
+              <div className="space-y-2">
+                <Label>Vacante</Label>
+                <Select value={selectedVacancy || ''} onValueChange={setSelectedVacancy}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Seleccionar vacante" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {activeVacancies.map(v => (
+                      <SelectItem key={v.id} value={v.id}>{v.title}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="space-y-2">
               <Label>Nombre completo</Label>
               <Input

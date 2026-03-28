@@ -56,7 +56,7 @@ const riskLevelColors: Record<string, string> = {
 };
 
 export default function Prevention() {
-  const { isAdmin } = useAuth();
+  const { } = useAuth();
   const { data: incidents, isLoading: loadingIncidents } = useIncidents();
   const { data: risks, isLoading: loadingRisks } = useRisks();
   const { data: trainings, isLoading: loadingTrainings } = useTrainings();
@@ -82,12 +82,8 @@ export default function Prevention() {
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && (
-                <>
-                  <RiskForm />
-                  <IncidentForm />
-                </>
-              )}
+              <RiskForm />
+              <IncidentForm />
               <UserMenu />
             </div>
           </div>
@@ -166,7 +162,7 @@ export default function Prevention() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Registro de Incidentes</CardTitle>
-                    {isAdmin && <IncidentForm />}
+                    <IncidentForm />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -180,16 +176,14 @@ export default function Prevention() {
                     <div className="text-center py-12 text-muted-foreground">
                       <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                       <p>No hay incidentes registrados</p>
-                      {isAdmin && (
-                        <IncidentForm 
-                          trigger={
-                            <Button variant="outline" className="mt-4">
-                              <Plus className="h-4 w-4 mr-2" />
-                              Reportar primer incidente
-                            </Button>
-                          }
-                        />
-                      )}
+                      <IncidentForm 
+                        trigger={
+                          <Button variant="outline" className="mt-4">
+                            <Plus className="h-4 w-4 mr-2" />
+                            Reportar primer incidente
+                          </Button>
+                        }
+                      />
                     </div>
                   ) : (
                     <Table>
@@ -328,7 +322,7 @@ export default function Prevention() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Listado de Riesgos Identificados</CardTitle>
-                    {isAdmin && <RiskForm />}
+                    <RiskForm />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -386,12 +380,10 @@ export default function Prevention() {
                       <CardTitle>Capacitaciones SST</CardTitle>
                       <CardDescription>Programas de formación y cumplimiento legal</CardDescription>
                     </div>
-                    {isAdmin && (
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nueva Capacitación
-                      </Button>
-                    )}
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nueva Capacitación
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -449,12 +441,10 @@ export default function Prevention() {
                       <CardTitle>Inspecciones de Seguridad</CardTitle>
                       <CardDescription>Programa de inspecciones y hallazgos</CardDescription>
                     </div>
-                    {isAdmin && (
-                      <Button>
-                        <Plus className="h-4 w-4 mr-2" />
-                        Nueva Inspección
-                      </Button>
-                    )}
+                    <Button>
+                      <Plus className="h-4 w-4 mr-2" />
+                      Nueva Inspección
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>

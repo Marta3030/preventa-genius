@@ -324,8 +324,6 @@ export default function ComiteParitario() {
                       </div>
                     </DialogContent>
                   </Dialog>
-                </>
-              )}
             </div>
           </div>
 

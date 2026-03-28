@@ -56,7 +56,7 @@ const riskLevelColors: Record<string, string> = {
 };
 
 export default function Prevention() {
-  const { isAdmin } = useAuth();
+  const { } = useAuth();
   const { data: incidents, isLoading: loadingIncidents } = useIncidents();
   const { data: risks, isLoading: loadingRisks } = useRisks();
   const { data: trainings, isLoading: loadingTrainings } = useTrainings();

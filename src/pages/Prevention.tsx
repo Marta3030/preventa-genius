@@ -162,7 +162,7 @@ export default function Prevention() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <CardTitle>Registro de Incidentes</CardTitle>
-                    {isAdmin && <IncidentForm />}
+                    <IncidentForm />
                   </div>
                 </CardHeader>
                 <CardContent>

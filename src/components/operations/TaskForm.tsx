@@ -212,7 +212,7 @@ export function TaskForm() {
                 <SelectValue placeholder="Seleccionar empleado" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">Sin asignar</SelectItem>
+                <SelectItem value="none">Sin asignar</SelectItem>
                 {employees?.map((emp) => (
                   <SelectItem 
                     key={emp.id} 

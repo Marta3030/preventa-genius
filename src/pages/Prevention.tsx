@@ -82,12 +82,8 @@ export default function Prevention() {
             </div>
 
             <div className="flex items-center gap-3">
-              {isAdmin && (
-                <>
-                  <RiskForm />
-                  <IncidentForm />
-                </>
-              )}
+              <RiskForm />
+              <IncidentForm />
               <UserMenu />
             </div>
           </div>

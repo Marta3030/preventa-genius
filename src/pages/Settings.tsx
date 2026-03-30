@@ -354,6 +354,11 @@ export default function Settings() {
               </Card>
             </TabsContent>
 
+            {/* Integraciones IA */}
+            <TabsContent value="ai" className="space-y-6">
+              <AISettingsTab />
+            </TabsContent>
+
             {/* Notificaciones */}
             <TabsContent value="notifications" className="space-y-6">
               <Card>

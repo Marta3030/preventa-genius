@@ -149,7 +149,7 @@ function AISettingsTab() {
   );
 }
 
-
+export default function Settings() {
   const { user, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 

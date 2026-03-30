@@ -35,7 +35,121 @@ import {
   Cpu,
 } from 'lucide-react';
 
-export default function Settings() {
+function AISettingsTab() {
+  const { data: settings } = useCompanySettings();
+  const saveSetting = useSaveCompanySetting();
+  const [provider, setProvider] = useState(settings?.ai_provider || 'groq');
+  const [apiKey, setApiKey] = useState('');
+  const [model, setModel] = useState(settings?.ai_model || '');
+
+  const handleSaveProvider = async () => {
+    try {
+      await saveSetting.mutateAsync({ key: 'ai_provider', value: provider });
+      if (apiKey) {
+        await saveSetting.mutateAsync({ key: `${provider}_api_key`, value: apiKey });
+      }
+      if (model) {
+        await saveSetting.mutateAsync({ key: 'ai_model', value: model });
+      }
+      toast.success('Configuración de IA guardada');
+      setApiKey('');
+    } catch {
+      toast.error('Error al guardar configuración');
+    }
+  };
+
+  const providers = [
+    { value: 'groq', label: 'Groq', models: ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant', 'mixtral-8x7b-32768'] },
+    { value: 'openai', label: 'OpenAI', models: ['gpt-4o-mini', 'gpt-4o', 'gpt-3.5-turbo'] },
+    { value: 'anthropic', label: 'Anthropic', models: ['claude-3-5-sonnet-20241022', 'claude-3-haiku-20240307'] },
+  ];
+
+  const selectedProviderConfig = providers.find(p => p.value === provider);
+  const hasKey = !!settings?.[`${provider}_api_key`];
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5" />
+            Asistente IA - Configuración
+          </CardTitle>
+          <CardDescription>
+            Configure su proveedor de IA para el chatbot de SST integrado
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <Label>Proveedor de IA</Label>
+              <Select value={provider} onValueChange={setProvider}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {providers.map(p => (
+                    <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Modelo</Label>
+              <Select value={model} onValueChange={setModel}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Modelo por defecto" />
+                </SelectTrigger>
+                <SelectContent>
+                  {selectedProviderConfig?.models.map(m => (
+                    <SelectItem key={m} value={m}>{m}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>API Key de {selectedProviderConfig?.label}</Label>
+            <div className="flex gap-2">
+              <Input
+                type="password"
+                placeholder={hasKey ? '••••••••••••••••' : `Ingrese su ${selectedProviderConfig?.label} API Key`}
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+              />
+              <Button onClick={handleSaveProvider} disabled={saveSetting.isPending}>
+                {saveSetting.isPending ? <RefreshCw className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+              </Button>
+            </div>
+            {hasKey && (
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3 text-emerald-500" />
+                API Key configurada
+              </p>
+            )}
+          </div>
+
+          <Separator />
+
+          <div className="rounded-lg bg-muted/50 p-4 space-y-2">
+            <h4 className="font-medium text-sm flex items-center gap-2">
+              <Cpu className="h-4 w-4" />
+              ¿Dónde obtener las API Keys?
+            </h4>
+            <ul className="text-sm text-muted-foreground space-y-1">
+              <li>• <strong>Groq:</strong> console.groq.com (gratis con límites generosos)</li>
+              <li>• <strong>OpenAI:</strong> platform.openai.com/api-keys</li>
+              <li>• <strong>Anthropic:</strong> console.anthropic.com</li>
+            </ul>
+          </div>
+        </CardContent>
+      </Card>
+    </>
+  );
+}
+
+
   const { user, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
 

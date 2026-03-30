@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { AIChatWidget } from "@/components/chat/AIChatWidget";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Prevention from "./pages/Prevention";
@@ -16,6 +17,7 @@ import Reclutamiento from "./pages/Reclutamiento";
 import ComiteParitario from "./pages/ComiteParitario";
 import Documents from "./pages/Documents";
 import Settings from "./pages/Settings";
+import Compliance from "./pages/Compliance";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +36,14 @@ const App = () => (
               element={
                 <ProtectedRoute>
                   <Index />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/cumplimiento" 
+              element={
+                <ProtectedRoute>
+                  <Compliance />
                 </ProtectedRoute>
               } 
             />
@@ -112,6 +122,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
+          <AIChatWidget />
         </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>

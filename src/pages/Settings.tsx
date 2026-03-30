@@ -11,6 +11,7 @@ import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
+import { useCompanySettings, useSaveCompanySetting } from '@/hooks/useCompanySettings';
 import { toast } from 'sonner';
 import {
   Settings as SettingsIcon,
@@ -30,6 +31,8 @@ import {
   RefreshCw,
   CheckCircle2,
   AlertTriangle,
+  Bot,
+  Cpu,
 } from 'lucide-react';
 
 export default function Settings() {

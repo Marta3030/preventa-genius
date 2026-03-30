@@ -263,6 +263,135 @@ export type Database = {
           },
         ]
       }
+      company_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_encrypted: boolean | null
+          setting_key: string
+          setting_value: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_encrypted?: boolean | null
+          setting_key: string
+          setting_value?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_encrypted?: boolean | null
+          setting_key?: string
+          setting_value?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      compliance_checks: {
+        Row: {
+          category: string
+          check_code: string
+          checked_at: string
+          created_at: string
+          description: string | null
+          entity_id: string | null
+          entity_type: string | null
+          id: string
+          legal_reference: string
+          notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string
+          check_code: string
+          checked_at?: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          legal_reference: string
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          check_code?: string
+          checked_at?: string
+          created_at?: string
+          description?: string | null
+          entity_id?: string | null
+          entity_type?: string | null
+          id?: string
+          legal_reference?: string
+          notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      compliance_rules: {
+        Row: {
+          auto_block: boolean | null
+          category: string
+          check_query: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean | null
+          legal_reference: string
+          rule_code: string
+          severity: string
+          title: string
+        }
+        Insert: {
+          auto_block?: boolean | null
+          category?: string
+          check_query?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          legal_reference: string
+          rule_code: string
+          severity?: string
+          title: string
+        }
+        Update: {
+          auto_block?: boolean | null
+          category?: string
+          check_query?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          legal_reference?: string
+          rule_code?: string
+          severity?: string
+          title?: string
+        }
+        Relationships: []
+      }
       contractor_documents: {
         Row: {
           contractor_id: string

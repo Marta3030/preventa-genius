@@ -10,6 +10,10 @@ import {
   HardHat,
   Wrench,
   Users2,
+  ShieldCheck,
+  FolderOpen,
+  Bell,
+  Settings,
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
@@ -23,12 +27,16 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+  { icon: ShieldCheck, label: "Cumplimiento", href: "/cumplimiento" },
   { icon: Shield, label: "Gerencia", href: "/gerencia" },
   { icon: Users, label: "RRHH", href: "/rrhh" },
   { icon: UserPlus, label: "Reclutamiento", href: "/reclutamiento" },
   { icon: HardHat, label: "Prevención", href: "/prevencion", badge: 3 },
   { icon: Wrench, label: "Operaciones", href: "/operaciones" },
   { icon: Users2, label: "Comité Paritario", href: "/comite" },
+  { icon: FolderOpen, label: "Documentos", href: "/documentos" },
+  { icon: Bell, label: "Alertas", href: "/alertas" },
+  { icon: Settings, label: "Configuración", href: "/configuracion" },
 ];
 
 export function Sidebar() {

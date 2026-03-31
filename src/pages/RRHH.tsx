@@ -241,7 +241,10 @@ export default function RRHH() {
             </TabsContent>
 
             {/* Onboarding Tab */}
-            <TabsContent value="onboarding">
+            <TabsContent value="onboarding" className="space-y-4">
+              <div className="flex justify-end">
+                <OnboardingTaskForm />
+              </div>
               <OnboardingList />
             </TabsContent>
 

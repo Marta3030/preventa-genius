@@ -446,10 +446,7 @@ export default function Prevention() {
                       <CardTitle>Inspecciones de Seguridad</CardTitle>
                       <CardDescription>Programa de inspecciones y hallazgos</CardDescription>
                     </div>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nueva Inspección
-                    </Button>
+                    <InspectionForm />
                   </div>
                 </CardHeader>
                 <CardContent>

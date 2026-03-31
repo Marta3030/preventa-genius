@@ -174,13 +174,17 @@ export function IntegralDashboard() {
         <TabsContent value="das">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileSignature className="h-5 w-5 text-primary" />
-                Derecho a Saber (DAS)
-              </CardTitle>
-              <CardDescription>
-                Gestión de documentos de información sobre riesgos laborales
-              </CardDescription>
+              <div className="flex items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileSignature className="h-5 w-5 text-primary" />
+                    Derecho a Saber (DAS)
+                  </CardTitle>
+                  <CardDescription>
+                    Gestión de documentos de información sobre riesgos laborales
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 mb-6">

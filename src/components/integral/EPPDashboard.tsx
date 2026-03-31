@@ -101,6 +101,7 @@ export function EPPDashboard() {
               <CardTitle>Catálogo de EPP</CardTitle>
               <CardDescription>Equipos de protección personal disponibles</CardDescription>
             </div>
+            <EPPCatalogForm />
           </div>
         </CardHeader>
         <CardContent>

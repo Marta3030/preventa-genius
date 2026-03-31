@@ -16,6 +16,7 @@ import {
 import { EmployeeForm } from '@/components/rrhh/EmployeeForm';
 import { EmployeeCard } from '@/components/rrhh/EmployeeCard';
 import { OnboardingList } from '@/components/rrhh/OnboardingList';
+import { OnboardingTaskForm } from '@/components/rrhh/OnboardingTaskForm';
 import { ContractForm } from '@/components/rrhh/ContractForm';
 import { EmployeeDetailSheet } from '@/components/rrhh/EmployeeDetailSheet';
 import { 

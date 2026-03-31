@@ -237,6 +237,7 @@ export default function Prevention() {
                     </div>
                     <CorrectiveActionForm />
                   </div>
+                </CardHeader>
                 <CardContent>
                   {loadingActions ? (
                     <Skeleton className="h-32 w-full" />

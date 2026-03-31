@@ -9,6 +9,9 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useIncidents, useRisks, useTrainings, useInspections, useCorrectiveActions } from "@/hooks/usePrevention";
 import { IncidentForm } from "@/components/prevention/IncidentForm";
+import { TrainingForm } from "@/components/prevention/TrainingForm";
+import { InspectionForm } from "@/components/prevention/InspectionForm";
+import { CorrectiveActionForm } from "@/components/prevention/CorrectiveActionForm";
 import { RiskForm } from "@/components/prevention/RiskForm";
 import { RIOHSCard } from "@/components/dashboard/RIOHSCard";
 import { RiskMatrix } from "@/components/dashboard/RiskMatrix";
@@ -227,8 +230,13 @@ export default function Prevention() {
               {/* Acciones Correctivas */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Acciones Correctivas (CAPA)</CardTitle>
-                  <CardDescription>Seguimiento de acciones derivadas de incidentes</CardDescription>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Acciones Correctivas (CAPA)</CardTitle>
+                      <CardDescription>Seguimiento de acciones derivadas de incidentes</CardDescription>
+                    </div>
+                    <CorrectiveActionForm />
+                  </div>
                 </CardHeader>
                 <CardContent>
                   {loadingActions ? (
@@ -380,10 +388,8 @@ export default function Prevention() {
                       <CardTitle>Capacitaciones SST</CardTitle>
                       <CardDescription>Programas de formación y cumplimiento legal</CardDescription>
                     </div>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nueva Capacitación
-                    </Button>
+                    
+                    <TrainingForm />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -441,10 +447,7 @@ export default function Prevention() {
                       <CardTitle>Inspecciones de Seguridad</CardTitle>
                       <CardDescription>Programa de inspecciones y hallazgos</CardDescription>
                     </div>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nueva Inspección
-                    </Button>
+                    <InspectionForm />
                   </div>
                 </CardHeader>
                 <CardContent>

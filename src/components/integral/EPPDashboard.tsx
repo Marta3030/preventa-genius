@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { useEPPAllocations, useEPPCatalog, useIntegralKPIs } from "@/hooks/useIntegralModule";
 import { EPPAllocationForm } from "./EPPAllocationForm";
+import { EPPCatalogForm } from "./EPPCatalogForm";
 import { useAuth } from "@/hooks/useAuth";
 import { format, parseISO, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -100,6 +101,7 @@ export function EPPDashboard() {
               <CardTitle>Catálogo de EPP</CardTitle>
               <CardDescription>Equipos de protección personal disponibles</CardDescription>
             </div>
+            <EPPCatalogForm />
           </div>
         </CardHeader>
         <CardContent>

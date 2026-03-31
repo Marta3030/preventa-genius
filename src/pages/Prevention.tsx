@@ -230,9 +230,13 @@ export default function Prevention() {
               {/* Acciones Correctivas */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Acciones Correctivas (CAPA)</CardTitle>
-                  <CardDescription>Seguimiento de acciones derivadas de incidentes</CardDescription>
-                </CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle>Acciones Correctivas (CAPA)</CardTitle>
+                      <CardDescription>Seguimiento de acciones derivadas de incidentes</CardDescription>
+                    </div>
+                    <CorrectiveActionForm />
+                  </div>
                 <CardContent>
                   {loadingActions ? (
                     <Skeleton className="h-32 w-full" />

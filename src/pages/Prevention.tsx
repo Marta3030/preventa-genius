@@ -387,10 +387,8 @@ export default function Prevention() {
                       <CardTitle>Capacitaciones SST</CardTitle>
                       <CardDescription>Programas de formación y cumplimiento legal</CardDescription>
                     </div>
-                    <Button>
-                      <Plus className="h-4 w-4 mr-2" />
-                      Nueva Capacitación
-                    </Button>
+                    <Button disabled className="hidden">placeholder</Button>
+                    <TrainingForm />
                   </div>
                 </CardHeader>
                 <CardContent>

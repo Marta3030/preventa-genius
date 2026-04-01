@@ -14,6 +14,7 @@ import { InspectionForm } from "@/components/prevention/InspectionForm";
 import { CorrectiveActionForm } from "@/components/prevention/CorrectiveActionForm";
 import { RiskForm } from "@/components/prevention/RiskForm";
 import { RIOHSCard } from "@/components/dashboard/RIOHSCard";
+import { RIOHSUploadDialog } from "@/components/prevention/RIOHSUploadDialog";
 import { RiskMatrix } from "@/components/dashboard/RiskMatrix";
 import { IntegralDashboard } from "@/components/integral/IntegralDashboard";
 import { useAuth } from "@/hooks/useAuth";

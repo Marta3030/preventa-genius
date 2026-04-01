@@ -502,8 +502,15 @@ export default function Prevention() {
                 <RIOHSCard />
                 <Card>
                   <CardHeader>
-                    <CardTitle>Información RIOHS</CardTitle>
-                    <CardDescription>Reglamento Interno de Orden, Higiene y Seguridad</CardDescription>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <CardTitle>Gestión RIOHS</CardTitle>
+                        <CardDescription>Reglamento Interno de Orden, Higiene y Seguridad</CardDescription>
+                      </div>
+                      <div className="flex gap-2">
+                        <RIOHSUploadDialog />
+                      </div>
+                    </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="p-4 rounded-lg bg-info/10 border border-info/20">
@@ -511,7 +518,7 @@ export default function Prevention() {
                       <p className="text-sm text-info/80">
                         Según el Art. 153 del Código del Trabajo, toda empresa con 10 o más 
                         trabajadores debe contar con un Reglamento Interno registrado en la 
-                        Inspección del Trabajo.
+                        Inspección del Trabajo y SEREMI de Salud.
                       </p>
                     </div>
                     <div className="space-y-2 text-sm">
@@ -522,6 +529,14 @@ export default function Prevention() {
                         <li>Sanciones por infracciones</li>
                         <li>Procedimiento de reclamos</li>
                         <li>Política de alcohol y drogas</li>
+                      </ul>
+                    </div>
+                    <div className="space-y-2 text-sm">
+                      <p><strong>Registros requeridos:</strong></p>
+                      <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                        <li>Registro ante la Inspección del Trabajo (DT)</li>
+                        <li>Registro ante la SEREMI de Salud</li>
+                        <li>Acuse de recibo de todos los trabajadores</li>
                       </ul>
                     </div>
                   </CardContent>

@@ -141,9 +141,9 @@ export default function Documents() {
                                   </div>
                                 </div>
                                 {doc.is_active ? (
-                                  <Badge className="bg-success/10 text-success border-success/30 text-xs"><Check className="h-3 w-3 mr-1" />Activo</Badge>
+                                  <Badge className="bg-success/10 text-success border-success/30 text-xs"><Check className="h-3 w-3 mr-1" />Vigente</Badge>
                                 ) : (
-                                  <Badge variant="outline" className="text-xs">Inactivo</Badge>
+                                  <Badge variant="outline" className="text-xs text-muted-foreground">Obsoleto</Badge>
                                 )}
                               </div>
                               <p className="text-xs text-muted-foreground mt-2">

@@ -39,6 +39,12 @@ const documentTypeLabels: Record<string, string> = {
   informe: 'Informe',
   capacitacion: 'Capacitación',
   otro: 'Otro',
+  política_sst: 'Política SST',
+  iper: 'IPER',
+  pise: 'PISE',
+  protocolo: 'Protocolo',
+  auditoria: 'Auditoría',
+  procedimiento_seguro: 'Proc. Trabajo Seguro',
 };
 
 export default function Documents() {

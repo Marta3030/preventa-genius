@@ -24,6 +24,12 @@ const documentTypeLabels: Record<DocumentType, string> = {
   informe: 'Informe',
   capacitacion: 'Capacitación',
   otro: 'Otro',
+  política_sst: 'Política SST',
+  iper: 'IPER',
+  pise: 'PISE',
+  protocolo: 'Protocolo',
+  auditoria: 'Auditoría',
+  procedimiento_seguro: 'Procedimiento de Trabajo Seguro',
 };
 
 const areaOptions = [

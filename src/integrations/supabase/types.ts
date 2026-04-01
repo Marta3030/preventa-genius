@@ -2598,6 +2598,12 @@ export type Database = {
         | "informe"
         | "capacitacion"
         | "otro"
+        | "política_sst"
+        | "iper"
+        | "pise"
+        | "protocolo"
+        | "auditoria"
+        | "procedimiento_seguro"
       incident_severity: "leve" | "moderado" | "grave" | "catastrofico"
       risk_level: "bajo" | "medio" | "alto" | "critico"
     }
@@ -2743,6 +2749,12 @@ export const Constants = {
         "informe",
         "capacitacion",
         "otro",
+        "política_sst",
+        "iper",
+        "pise",
+        "protocolo",
+        "auditoria",
+        "procedimiento_seguro",
       ],
       incident_severity: ["leve", "moderado", "grave", "catastrofico"],
       risk_level: ["bajo", "medio", "alto", "critico"],

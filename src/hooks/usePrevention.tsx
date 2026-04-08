@@ -514,7 +514,7 @@ export function useRiskMatrix() {
 export async function uploadDocument(file: File, path: string): Promise<string> {
   const { data, error } = await supabase.storage
     .from('documents')
-    .upload(path, file, { upsert: true });
+    .upload(path, file, { upsert: false });
   
   if (error) throw error;
   

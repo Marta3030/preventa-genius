@@ -92,7 +92,7 @@ async function generateFileHash(file: File): Promise<string> {
 async function uploadDocumentFile(file: File, path: string): Promise<string> {
   const { data, error } = await supabase.storage
     .from('documents')
-    .upload(path, file, { upsert: true });
+    .upload(path, file, { upsert: false });
   
   if (error) throw error;
   

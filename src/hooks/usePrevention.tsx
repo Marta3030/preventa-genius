@@ -617,6 +617,8 @@ export function useUploadRIOHS() {
       expiryDate?: string; 
       registeredWithDT?: boolean;
     }) => {
+      if (!user?.id) throw new Error('Usuario no autenticado');
+      
       // Upload file
       const path = `riohs/v${version}-${Date.now()}.pdf`;
       const fileUrl = await uploadDocument(file, path);
@@ -625,19 +627,20 @@ export function useUploadRIOHS() {
       await supabase
         .from('documents')
         .update({ is_active: false })
-        .eq('document_type', 'riohs');
+        .eq('document_type', 'riohs')
+        .eq('is_active', true);
       
       // Create new document
       const { data, error } = await supabase
         .from('documents')
         .insert({
           title: `Reglamento Interno (RIOHS) v${version}`,
-          document_type: 'riohs',
+          document_type: 'riohs' as const,
           file_url: fileUrl,
           version,
           expiry_date: expiryDate,
           registered_with_dt: registeredWithDT,
-          uploaded_by: user?.id,
+          uploaded_by: user.id,
           is_active: true,
         })
         .select()

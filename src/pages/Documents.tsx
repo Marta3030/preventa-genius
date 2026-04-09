@@ -78,7 +78,7 @@ export default function Documents() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              {isAdmin && <DocumentUploadDialog />}
+              <DocumentUploadDialog />
               <UserMenu />
             </div>
           </div>

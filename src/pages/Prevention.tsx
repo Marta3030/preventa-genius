@@ -31,6 +31,7 @@ import {
   XCircle,
   Plus,
   Layers,
+  Globe,
 } from "lucide-react";
 
 const severityColors: Record<string, string> = {
@@ -543,6 +544,35 @@ export default function Prevention() {
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Registro SEREMI de Salud */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Globe className="h-5 w-5" />
+                    Registro SEREMI de Salud
+                  </CardTitle>
+                  <CardDescription>
+                    Estado del registro ante la Secretaría Regional Ministerial de Salud
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center justify-between p-4 rounded-lg bg-success/10 border border-success/20">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="h-6 w-6 text-success" />
+                      <div>
+                        <p className="font-medium">Registro SEREMI vigente</p>
+                        <p className="text-sm text-muted-foreground">
+                          Resolución N° 12345 - Vence: 31/12/2026
+                        </p>
+                      </div>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      Ver documento
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
             </TabsContent>
           </Tabs>
         </div>

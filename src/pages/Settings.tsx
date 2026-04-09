@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { UserMenu } from '@/components/layout/UserMenu';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useAuth } from '@/hooks/useAuth';
 import { useCompanySettings, useSaveCompanySetting } from '@/hooks/useCompanySettings';
+import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
   Settings as SettingsIcon,
@@ -152,6 +153,12 @@ function AISettingsTab() {
 export default function Settings() {
   const { user, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const { data: compSettings } = useCompanySettings();
+  const saveSetting = useSaveCompanySetting();
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Company settings state
   const [companySettings, setCompanySettings] = useState({
@@ -439,33 +446,7 @@ export default function Settings() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe className="h-5 w-5" />
-                    Registro SEREMI de Salud
-                  </CardTitle>
-                  <CardDescription>
-                    Estado del registro ante la Secretaría Regional Ministerial de Salud
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between p-4 rounded-lg bg-success/10 border border-success/20">
-                    <div className="flex items-center gap-3">
-                      <CheckCircle2 className="h-6 w-6 text-success" />
-                      <div>
-                        <p className="font-medium">Registro SEREMI vigente</p>
-                        <p className="text-sm text-muted-foreground">
-                          Resolución N° 12345 - Vence: 31/12/2026
-                        </p>
-                      </div>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      Ver documento
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              {/* SEREMI registration moved to Prevention module */}
             </TabsContent>
 
             {/* Integraciones IA */}
@@ -743,7 +724,20 @@ export default function Settings() {
                         Usar colores oscuros en la interfaz
                       </p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={darkMode}
+                      onCheckedChange={(checked) => {
+                        setDarkMode(checked);
+                        if (checked) {
+                          document.documentElement.classList.add('dark');
+                          localStorage.setItem('theme', 'dark');
+                        } else {
+                          document.documentElement.classList.remove('dark');
+                          localStorage.setItem('theme', 'light');
+                        }
+                        toast.success(checked ? 'Tema oscuro activado' : 'Tema claro activado');
+                      }}
+                    />
                   </div>
 
                   <Separator />
@@ -751,10 +745,46 @@ export default function Settings() {
                   <div className="space-y-2">
                     <Label>Logo de la empresa</Label>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
-                        <Building2 className="h-8 w-8 text-muted-foreground" />
+                      <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+                        {(logoUrl || compSettings?.company_logo) ? (
+                          <img src={logoUrl || compSettings?.company_logo} alt="Logo" className="w-full h-full object-contain" />
+                        ) : (
+                          <Building2 className="h-8 w-8 text-muted-foreground" />
+                        )}
                       </div>
-                      <Button variant="outline">Cambiar logo</Button>
+                      <div className="space-y-2">
+                        <input
+                          ref={logoInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file || !user) return;
+                            setLogoUploading(true);
+                            try {
+                              const fileName = `logos/${user.id}_${Date.now()}_${file.name}`;
+                              const { error: uploadError } = await supabase.storage
+                                .from('documents')
+                                .upload(fileName, file, { upsert: false });
+                              if (uploadError) throw uploadError;
+                              const { data: urlData } = supabase.storage.from('documents').getPublicUrl(fileName);
+                              const url = urlData.publicUrl;
+                              await saveSetting.mutateAsync({ key: 'company_logo', value: url });
+                              setLogoUrl(url);
+                              toast.success('Logo actualizado correctamente');
+                            } catch (err: any) {
+                              toast.error('Error al subir logo: ' + err.message);
+                            } finally {
+                              setLogoUploading(false);
+                            }
+                          }}
+                        />
+                        <Button variant="outline" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
+                          {logoUploading ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : null}
+                          Cambiar logo
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

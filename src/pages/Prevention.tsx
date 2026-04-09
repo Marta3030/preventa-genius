@@ -33,7 +33,6 @@ import {
   Layers,
   Globe,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 const severityColors: Record<string, string> = {
   leve: "bg-success/10 text-success border-success/30",

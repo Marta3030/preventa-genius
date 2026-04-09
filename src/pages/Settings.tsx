@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { UserMenu } from '@/components/layout/UserMenu';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -152,6 +152,12 @@ function AISettingsTab() {
 export default function Settings() {
   const { user, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
+  const { data: compSettings } = useCompanySettings();
+  const saveSetting = useSaveCompanySetting();
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.classList.contains('dark'));
+  const [logoUrl, setLogoUrl] = useState('');
+  const [logoUploading, setLogoUploading] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Company settings state
   const [companySettings, setCompanySettings] = useState({

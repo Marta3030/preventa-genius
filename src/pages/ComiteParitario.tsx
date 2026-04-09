@@ -97,7 +97,11 @@ export default function ComiteParitario() {
   const [isMemberOpen, setIsMemberOpen] = useState(false);
   const [isMeetingOpen, setIsMeetingOpen] = useState(false);
   const [isActionOpen, setIsActionOpen] = useState(false);
-  const [selectedMeeting, setSelectedMeeting] = useState<string | null>(null);
+  const [isActaOpen, setIsActaOpen] = useState(false);
+  const [selectedMeetingForActa, setSelectedMeetingForActa] = useState<string | null>(null);
+  const [actaFile, setActaFile] = useState<File | null>(null);
+  const [actaUploading, setActaUploading] = useState(false);
+  const actaInputRef = useRef<HTMLInputElement>(null);
 
   const [newMember, setNewMember] = useState({
     name: '',

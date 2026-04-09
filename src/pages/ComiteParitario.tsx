@@ -472,7 +472,7 @@ export default function ComiteParitario() {
                                 {meetingStatusLabels[meeting.status]}
                               </Badge>
                             </TableCell>
-                            <TableCell className="text-right space-x-2">
+                             <TableCell className="text-right space-x-2">
                               {meeting.status === 'scheduled' && (
                                 <Button
                                   size="sm"
@@ -483,16 +483,29 @@ export default function ComiteParitario() {
                                 </Button>
                               )}
                               {meeting.status === 'completed' && (
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => {
-                                    setSelectedMeeting(meeting.id);
-                                    setIsActionOpen(true);
-                                  }}
-                                >
-                                  <Plus className="h-4 w-4" />
-                                </Button>
+                                <>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setSelectedMeeting(meeting.id);
+                                      setIsActionOpen(true);
+                                    }}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => {
+                                      setSelectedMeetingForActa(meeting.id);
+                                      setIsActaOpen(true);
+                                    }}
+                                    title="Subir Acta"
+                                  >
+                                    <Upload className="h-4 w-4" />
+                                  </Button>
+                                </>
                               )}
                               <Button size="sm" variant="ghost">
                                 <Eye className="h-4 w-4" />

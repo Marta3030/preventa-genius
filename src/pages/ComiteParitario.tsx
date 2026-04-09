@@ -199,6 +199,43 @@ export default function ComiteParitario() {
     }
   };
 
+  const handleUploadActa = async () => {
+    if (!actaFile || !selectedMeetingForActa || !user) return;
+    setActaUploading(true);
+    try {
+      const fileName = `actas/comite_${selectedMeetingForActa}_${Date.now()}_${actaFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('documents')
+        .upload(fileName, actaFile, { upsert: false });
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from('documents').getPublicUrl(fileName);
+
+      const { error: docError } = await supabase.from('documents').insert({
+        title: `Acta Reunión Comité - ${format(new Date(), 'dd/MM/yyyy', { locale: es })}`,
+        document_type: 'acta' as any,
+        file_url: urlData.publicUrl,
+        uploaded_by: user.id,
+        version: 1,
+        is_active: true,
+        owner_area: 'comite_paritario',
+      });
+      if (docError) throw docError;
+
+      // Link the document to the meeting
+      await updateMeeting.mutateAsync({ id: selectedMeetingForActa, notes: `Acta subida: ${urlData.publicUrl}` });
+
+      toast({ title: 'Acta subida correctamente' });
+      setIsActaOpen(false);
+      setActaFile(null);
+      setSelectedMeetingForActa(null);
+    } catch (error: any) {
+      toast({ title: 'Error al subir acta', description: error.message, variant: 'destructive' });
+    } finally {
+      setActaUploading(false);
+    }
+  };
+
   const activeMembers = members?.filter(m => m.status === 'active') || [];
 
   return (
@@ -619,6 +656,50 @@ export default function ComiteParitario() {
             </div>
             <Button onClick={handleCreateAction} className="w-full" disabled={createAction.isPending}>
               Agregar Acuerdo
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+      {/* Acta Upload Dialog */}
+      <Dialog open={isActaOpen} onOpenChange={(v) => { setIsActaOpen(v); if (!v) { setActaFile(null); setSelectedMeetingForActa(null); } }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="h-5 w-5 text-primary" />
+              Subir Acta de Reunión
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Suba el acta firmada con los temas tratados, soluciones y firmas de los integrantes como evidencia.
+            </p>
+            <div
+              onClick={() => actaInputRef.current?.click()}
+              className="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+            >
+              <input
+                ref={actaInputRef}
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={(e) => { if (e.target.files?.[0]) setActaFile(e.target.files[0]); }}
+                className="hidden"
+              />
+              {actaFile ? (
+                <div className="flex items-center justify-center gap-2 text-success">
+                  <CheckCircle2 className="h-5 w-5" />
+                  <span className="font-medium">{actaFile.name}</span>
+                </div>
+              ) : (
+                <>
+                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">Click para seleccionar el acta</p>
+                  <p className="text-xs text-muted-foreground mt-1">Formatos: PDF, DOC, DOCX, JPG, PNG</p>
+                </>
+              )}
+            </div>
+            <Button onClick={handleUploadActa} className="w-full" disabled={!actaFile || actaUploading}>
+              {actaUploading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Subir Acta
             </Button>
           </div>
         </DialogContent>

@@ -723,7 +723,20 @@ export default function Settings() {
                         Usar colores oscuros en la interfaz
                       </p>
                     </div>
-                    <Switch />
+                    <Switch
+                      checked={darkMode}
+                      onCheckedChange={(checked) => {
+                        setDarkMode(checked);
+                        if (checked) {
+                          document.documentElement.classList.add('dark');
+                          localStorage.setItem('theme', 'dark');
+                        } else {
+                          document.documentElement.classList.remove('dark');
+                          localStorage.setItem('theme', 'light');
+                        }
+                        toast.success(checked ? 'Tema oscuro activado' : 'Tema claro activado');
+                      }}
+                    />
                   </div>
 
                   <Separator />
@@ -731,10 +744,46 @@ export default function Settings() {
                   <div className="space-y-2">
                     <Label>Logo de la empresa</Label>
                     <div className="flex items-center gap-4">
-                      <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center">
-                        <Building2 className="h-8 w-8 text-muted-foreground" />
+                      <div className="w-16 h-16 rounded-lg bg-muted flex items-center justify-center overflow-hidden">
+                        {(logoUrl || compSettings?.company_logo) ? (
+                          <img src={logoUrl || compSettings?.company_logo} alt="Logo" className="w-full h-full object-contain" />
+                        ) : (
+                          <Building2 className="h-8 w-8 text-muted-foreground" />
+                        )}
                       </div>
-                      <Button variant="outline">Cambiar logo</Button>
+                      <div className="space-y-2">
+                        <input
+                          ref={logoInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file || !user) return;
+                            setLogoUploading(true);
+                            try {
+                              const fileName = `logos/${user.id}_${Date.now()}_${file.name}`;
+                              const { error: uploadError } = await supabase.storage
+                                .from('documents')
+                                .upload(fileName, file, { upsert: false });
+                              if (uploadError) throw uploadError;
+                              const { data: urlData } = supabase.storage.from('documents').getPublicUrl(fileName);
+                              const url = urlData.publicUrl;
+                              await saveSetting.mutateAsync({ key: 'company_logo', value: url });
+                              setLogoUrl(url);
+                              toast.success('Logo actualizado correctamente');
+                            } catch (err: any) {
+                              toast.error('Error al subir logo: ' + err.message);
+                            } finally {
+                              setLogoUploading(false);
+                            }
+                          }}
+                        />
+                        <Button variant="outline" onClick={() => logoInputRef.current?.click()} disabled={logoUploading}>
+                          {logoUploading ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : null}
+                          Cambiar logo
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

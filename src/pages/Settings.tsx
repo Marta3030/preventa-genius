@@ -151,7 +151,7 @@ function AISettingsTab() {
 }
 
 export default function Settings() {
-  const { user, isAdmin } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const { data: compSettings } = useCompanySettings();
   const saveSetting = useSaveCompanySetting();
@@ -160,14 +160,45 @@ export default function Settings() {
   const [logoUploading, setLogoUploading] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
 
+  // Profile editing state
+  const [profileForm, setProfileForm] = useState({
+    full_name: '',
+    phone: '',
+  });
+  const [profileSaving, setProfileSaving] = useState(false);
+
+  useEffect(() => {
+    if (profile) {
+      setProfileForm({
+        full_name: profile.full_name || '',
+        phone: profile.phone || '',
+      });
+    }
+  }, [profile]);
+
+  // Load company settings from DB
+  useEffect(() => {
+    if (compSettings) {
+      setCompanySettings(prev => ({
+        name: compSettings.company_name || prev.name,
+        rut: compSettings.company_rut || prev.rut,
+        address: compSettings.company_address || prev.address,
+        phone: compSettings.company_phone || prev.phone,
+        email: compSettings.company_email || prev.email,
+        website: compSettings.company_website || prev.website,
+        industry: compSettings.company_industry || prev.industry,
+      }));
+    }
+  }, [compSettings]);
+
   // Company settings state
   const [companySettings, setCompanySettings] = useState({
-    name: 'Mi Empresa S.A.',
-    rut: '76.123.456-7',
-    address: 'Av. Principal 1234, Santiago',
-    phone: '+56 2 1234 5678',
-    email: 'contacto@miempresa.cl',
-    website: 'www.miempresa.cl',
+    name: '',
+    rut: '',
+    address: '',
+    phone: '',
+    email: '',
+    website: '',
     industry: 'construccion',
   });
 
@@ -196,12 +227,47 @@ export default function Settings() {
     ipWhitelist: false,
   });
 
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    setProfileSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: profileForm.full_name,
+          phone: profileForm.phone,
+        })
+        .eq('user_id', user.id);
+      if (error) throw error;
+      toast.success('Perfil actualizado correctamente');
+    } catch (err: any) {
+      toast.error('Error al actualizar perfil: ' + err.message);
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const handleSave = async () => {
     setIsSaving(true);
-    // Simular guardado
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSaving(false);
-    toast.success('Configuración guardada correctamente');
+    try {
+      const settingsToSave = [
+        { key: 'company_name', value: companySettings.name },
+        { key: 'company_rut', value: companySettings.rut },
+        { key: 'company_address', value: companySettings.address },
+        { key: 'company_phone', value: companySettings.phone },
+        { key: 'company_email', value: companySettings.email },
+        { key: 'company_website', value: companySettings.website },
+        { key: 'company_industry', value: companySettings.industry },
+      ];
+      for (const s of settingsToSave) {
+        await saveSetting.mutateAsync(s);
+      }
+      toast.success('Configuración guardada correctamente');
+    } catch (err: any) {
+      toast.error('Error al guardar: ' + err.message);
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const insuranceAdministrators = [

@@ -14,6 +14,7 @@ import {
   TableRow 
 } from '@/components/ui/table';
 import { EmployeeForm } from '@/components/rrhh/EmployeeForm';
+import { DocumentUploadDialog } from '@/components/documents/DocumentUploadDialog';
 import { EmployeeCard } from '@/components/rrhh/EmployeeCard';
 import { OnboardingList } from '@/components/rrhh/OnboardingList';
 import { OnboardingTaskForm } from '@/components/rrhh/OnboardingTaskForm';

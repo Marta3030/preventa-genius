@@ -148,6 +148,10 @@ export default function RRHH() {
                 <FileSignature className="h-4 w-4" />
                 Contratos
               </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Documentos
+              </TabsTrigger>
             </TabsList>
 
             {/* Employees Tab */}

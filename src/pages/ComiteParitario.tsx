@@ -213,7 +213,7 @@ export default function ComiteParitario() {
 
       const { error: docError } = await supabase.from('documents').insert({
         title: `Acta Reunión Comité - ${format(new Date(), 'dd/MM/yyyy', { locale: es })}`,
-        document_type: 'acta' as any,
+        document_type: 'acta',
         file_url: urlData.publicUrl,
         uploaded_by: user.id,
         version: 1,

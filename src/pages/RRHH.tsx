@@ -26,6 +26,7 @@ import {
   useRRHHStats,
   Employee
 } from '@/hooks/useRRHH';
+import { useAllDocuments } from '@/hooks/useDocuments';
 import { 
   Users, 
   FileSignature, 
@@ -33,7 +34,9 @@ import {
   AlertCircle,
   Search,
   LayoutGrid,
-  List
+  List,
+  Download,
+  FileText
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -47,6 +50,11 @@ export default function RRHH() {
   const { data: onboardingTasks } = useOnboardingTasks();
   const { data: contracts, isLoading: loadingContracts } = useContracts();
   const { data: stats } = useRRHHStats();
+  const { data: allDocuments } = useAllDocuments();
+
+  const rrhhDocuments = allDocuments?.filter(d => 
+    ['acta', 'capacitacion', 'procedimiento', 'otro'].includes(d.document_type)
+  ) || [];
 
   const filteredEmployees = employees?.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -139,6 +147,10 @@ export default function RRHH() {
               <TabsTrigger value="contracts" className="gap-2">
                 <FileSignature className="h-4 w-4" />
                 Contratos
+              </TabsTrigger>
+              <TabsTrigger value="documents" className="gap-2">
+                <FileText className="h-4 w-4" />
+                Documentos
               </TabsTrigger>
             </TabsList>
 
@@ -301,6 +313,60 @@ export default function RRHH() {
                             </TableRow>
                           );
                         })}
+                      </TableBody>
+                    </Table>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+            {/* Documents Tab */}
+            <TabsContent value="documents">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5" />
+                    Documentos del Área
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {rrhhDocuments.length === 0 ? (
+                    <div className="text-center py-12 text-muted-foreground">
+                      <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                      <p>No hay documentos disponibles</p>
+                    </div>
+                  ) : (
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Título</TableHead>
+                          <TableHead>Tipo</TableHead>
+                          <TableHead>Versión</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead className="text-right">Descargar</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {rrhhDocuments.map(doc => (
+                          <TableRow key={doc.id}>
+                            <TableCell className="font-medium">{doc.title}</TableCell>
+                            <TableCell className="capitalize">{doc.document_type}</TableCell>
+                            <TableCell>v{doc.version}</TableCell>
+                            <TableCell>
+                              <Badge variant={doc.is_active ? 'default' : 'secondary'}>
+                                {doc.is_active ? 'Vigente' : 'Obsoleto'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(doc.file_url, '_blank')}
+                              >
+                                <Download className="h-4 w-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        ))}
                       </TableBody>
                     </Table>
                   )}

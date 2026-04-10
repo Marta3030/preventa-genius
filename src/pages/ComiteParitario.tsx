@@ -520,36 +520,34 @@ export default function ComiteParitario() {
                                   size="sm"
                                   variant="outline"
                                   onClick={() => handleCompleteMeeting(meeting.id)}
+                                  title="Marcar como completada"
                                 >
                                   <CheckCircle2 className="h-4 w-4" />
                                 </Button>
                               )}
-                              {meeting.status === 'completed' && (
-                                <>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setSelectedMeeting(meeting.id);
-                                      setIsActionOpen(true);
-                                    }}
-                                  >
-                                    <Plus className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    onClick={() => {
-                                      setSelectedMeetingForActa(meeting.id);
-                                      setIsActaOpen(true);
-                                    }}
-                                    title="Subir Acta"
-                                  >
-                                    <Upload className="h-4 w-4" />
-                                  </Button>
-                                </>
-                              )}
-                              <Button size="sm" variant="ghost">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedMeeting(meeting.id);
+                                  setIsActionOpen(true);
+                                }}
+                                title="Agregar Acuerdo"
+                              >
+                                <Plus className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  setSelectedMeetingForActa(meeting.id);
+                                  setIsActaOpen(true);
+                                }}
+                                title="Subir Acta"
+                              >
+                                <Upload className="h-4 w-4" />
+                              </Button>
+                              <Button size="sm" variant="ghost" title="Ver detalles">
                                 <Eye className="h-4 w-4" />
                               </Button>
                             </TableCell>

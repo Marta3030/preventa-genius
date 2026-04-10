@@ -323,7 +323,11 @@ export default function Settings() {
 
         <div className="p-6">
           <Tabs defaultValue="company" className="space-y-6">
-            <TabsList className="grid w-full max-w-4xl grid-cols-6">
+            <TabsList className="grid w-full max-w-4xl grid-cols-7">
+              <TabsTrigger value="profile" className="flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                <span className="hidden sm:inline">Perfil</span>
+              </TabsTrigger>
               <TabsTrigger value="company" className="flex items-center gap-2">
                 <Building2 className="h-4 w-4" />
                 <span className="hidden sm:inline">Empresa</span>
@@ -349,6 +353,72 @@ export default function Settings() {
                 <span className="hidden sm:inline">Sistema</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Perfil de Usuario */}
+            <TabsContent value="profile" className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Users className="h-5 w-5" />
+                    Mi Perfil
+                  </CardTitle>
+                  <CardDescription>
+                    Datos de tu cuenta de usuario
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label>Nombre Completo</Label>
+                      <Input
+                        value={profileForm.full_name}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, full_name: e.target.value }))}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Email</Label>
+                      <Input
+                        value={profile?.email || user?.email || ''}
+                        disabled
+                        className="bg-muted"
+                      />
+                      <p className="text-xs text-muted-foreground">El email no se puede cambiar</p>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Teléfono</Label>
+                      <Input
+                        value={profileForm.phone}
+                        onChange={(e) => setProfileForm(prev => ({ ...prev, phone: e.target.value }))}
+                        placeholder="+56 9 1234 5678"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Rol</Label>
+                      <Input
+                        value={
+                          profile ? (
+                            (() => { 
+                              const roleMap: Record<string, string> = {
+                                admin_general: 'Administrador General',
+                                admin_area: 'Administrador de Área',
+                                assistant: 'Asistente',
+                              };
+                              return roleMap[(profile as any)?.role] || 'Asistente';
+                            })()
+                          ) : 'Cargando...'
+                        }
+                        disabled
+                        className="bg-muted"
+                      />
+                    </div>
+                  </div>
+                  <Button onClick={handleSaveProfile} disabled={profileSaving}>
+                    {profileSaving ? <RefreshCw className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                    Guardar Perfil
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
 
             {/* Empresa */}
             <TabsContent value="company" className="space-y-6">

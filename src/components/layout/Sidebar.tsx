@@ -2,6 +2,7 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
+import { useCompanySettings } from "@/hooks/useCompanySettings";
 import {
   LayoutDashboard,
   Shield,
@@ -42,6 +43,10 @@ const navItems: NavItem[] = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+  const { data: companySettings } = useCompanySettings();
+
+  const companyName = companySettings?.company_name;
+  const companyLogo = companySettings?.company_logo;
 
   return (
     <aside
@@ -53,16 +58,18 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-3 p-4 border-b border-sidebar-border">
         <img
-          src={logo}
-          alt="Prevention & Safety"
+          src={companyLogo || logo}
+          alt={companyName || "Prevention & Safety"}
           className="h-12 w-12 object-contain"
         />
         {!collapsed && (
           <div className="flex flex-col animate-fade-in">
             <span className="text-sm font-bold text-sidebar-primary">
-              PREVENTION
+              {companyName || "PREVENTION"}
             </span>
-            <span className="text-xs text-sidebar-foreground/70">& SAFETY</span>
+            {!companyName && (
+              <span className="text-xs text-sidebar-foreground/70">& SAFETY</span>
+            )}
           </div>
         )}
       </div>

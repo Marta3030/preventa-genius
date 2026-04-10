@@ -323,17 +323,26 @@ export default function RRHH() {
             {/* Documents Tab */}
             <TabsContent value="documents">
               <Card>
-                <CardHeader>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="h-5 w-5" />
                     Documentos del Área
                   </CardTitle>
+                  <DocumentUploadDialog 
+                    trigger={
+                      <Button size="sm" className="gap-2">
+                        <Download className="h-4 w-4 rotate-180" />
+                        Subir Documento
+                      </Button>
+                    }
+                  />
                 </CardHeader>
                 <CardContent>
                   {rrhhDocuments.length === 0 ? (
                     <div className="text-center py-12 text-muted-foreground">
                       <FileText className="h-12 w-12 mx-auto mb-2 opacity-50" />
                       <p>No hay documentos disponibles</p>
+                      <p className="text-sm mt-1">Usa el botón "Subir Documento" para agregar archivos del área</p>
                     </div>
                   ) : (
                     <Table>

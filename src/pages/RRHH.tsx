@@ -50,6 +50,11 @@ export default function RRHH() {
   const { data: onboardingTasks } = useOnboardingTasks();
   const { data: contracts, isLoading: loadingContracts } = useContracts();
   const { data: stats } = useRRHHStats();
+  const { data: allDocuments } = useAllDocuments();
+
+  const rrhhDocuments = allDocuments?.filter(d => 
+    ['acta', 'capacitacion', 'procedimiento', 'otro'].includes(d.document_type)
+  ) || [];
 
   const filteredEmployees = employees?.filter(emp => 
     emp.name.toLowerCase().includes(searchTerm.toLowerCase()) ||

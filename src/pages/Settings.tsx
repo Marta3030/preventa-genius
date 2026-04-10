@@ -322,7 +322,7 @@ export default function Settings() {
         </header>
 
         <div className="p-6">
-          <Tabs defaultValue="company" className="space-y-6">
+          <Tabs defaultValue="profile" className="space-y-6">
             <TabsList className="grid w-full max-w-4xl grid-cols-7">
               <TabsTrigger value="profile" className="flex items-center gap-2">
                 <Users className="h-4 w-4" />

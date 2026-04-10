@@ -26,6 +26,7 @@ import {
   useRRHHStats,
   Employee
 } from '@/hooks/useRRHH';
+import { useAllDocuments } from '@/hooks/useDocuments';
 import { 
   Users, 
   FileSignature, 
@@ -33,7 +34,9 @@ import {
   AlertCircle,
   Search,
   LayoutGrid,
-  List
+  List,
+  Download,
+  FileText
 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 

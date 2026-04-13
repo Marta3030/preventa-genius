@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { usePreventionKPIs, useIncidents, useCorrectiveActions } from "@/hooks/usePrevention";
 import { useNavigate } from "react-router-dom";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { exportDashboardPDF } from "@/lib/pdfExporter";
+import jsPDF from "jspdf";
 import {
   HardHat,
   AlertTriangle,

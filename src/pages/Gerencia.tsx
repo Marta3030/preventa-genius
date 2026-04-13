@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -124,7 +125,7 @@ export default function Gerencia() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="pl-64 transition-all duration-300">
+      <main className={isMobile ? "pl-0 pt-14" : "pl-64 transition-all duration-300"}>
         <div className="p-6 space-y-6 max-w-full">
           {/* Header */}
           <div className="flex items-center justify-between">

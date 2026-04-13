@@ -1,3 +1,4 @@
+import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { UserMenu } from "@/components/layout/UserMenu";
@@ -61,6 +62,7 @@ const riskLevelColors: Record<string, string> = {
 };
 
 export default function Prevention() {
+  const isMobile = useIsMobile();
   const { } = useAuth();
   const { data: incidents, isLoading: loadingIncidents } = useIncidents();
   const { data: risks, isLoading: loadingRisks } = useRisks();
@@ -72,7 +74,7 @@ export default function Prevention() {
     <div className="min-h-screen bg-background">
       <Sidebar />
 
-      <main className="pl-64 transition-all duration-300">
+      <main className={isMobile ? "pl-0 pt-14" : "pl-64 transition-all duration-300"}>
         {/* Header */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border">
           <div className="flex items-center justify-between px-6 py-4">

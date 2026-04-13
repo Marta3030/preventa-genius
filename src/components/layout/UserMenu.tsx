@@ -1,4 +1,5 @@
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,6 +27,7 @@ const roleBadgeVariants = {
 
 export function UserMenu() {
   const { profile, userRole, signOut } = useAuth();
+  const navigate = useNavigate();
 
   const getInitials = (name: string) => {
     return name
@@ -64,11 +66,11 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/configuracion')}>
           <User className="mr-2 h-4 w-4" />
           <span>Mi Perfil</span>
         </DropdownMenuItem>
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate('/configuracion')}>
           <Settings className="mr-2 h-4 w-4" />
           <span>Configuración</span>
         </DropdownMenuItem>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -65,6 +66,7 @@ const areaLabels: Record<string, string> = {
 
 export default function Operations() {
   const { data: tasks, isLoading } = useOperationalTasks();
+  const isMobile = useIsMobile();
   const { data: stats } = useOperationsStats();
   const updateTask = useUpdateOperationalTask();
 
@@ -88,7 +90,7 @@ export default function Operations() {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="pl-64 transition-all duration-300">
+      <main className={isMobile ? "pl-0 pt-14" : "pl-64 transition-all duration-300"}>
         <div className="p-6 space-y-6 max-w-full">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

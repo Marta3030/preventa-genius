@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 import logo from "@/assets/logo.png";
 import { useCompanySettings } from "@/hooks/useCompanySettings";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   LayoutDashboard,
   Shield,
@@ -17,6 +18,8 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
+  Menu,
+  X,
 } from "lucide-react";
 
 interface NavItem {
@@ -42,12 +45,78 @@ const navItems: NavItem[] = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const isMobile = useIsMobile();
   const { data: companySettings } = useCompanySettings();
 
   const companyName = companySettings?.company_name;
   const companyLogo = companySettings?.company_logo;
 
+  // Close mobile sidebar on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  // Mobile: hamburger button
+  if (isMobile) {
+    return (
+      <>
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="fixed top-4 left-4 z-50 p-2 bg-sidebar rounded-lg shadow-lg text-sidebar-foreground"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+
+        {/* Overlay */}
+        {mobileOpen && (
+          <div
+            className="fixed inset-0 z-40 bg-black/50"
+            onClick={() => setMobileOpen(false)}
+          />
+        )}
+
+        {/* Sidebar drawer */}
+        <aside
+          className={cn(
+            "fixed left-0 top-0 z-50 h-screen w-64 bg-sidebar transition-transform duration-300 flex flex-col",
+            mobileOpen ? "translate-x-0" : "-translate-x-full"
+          )}
+        >
+          <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+            <div className="flex items-center gap-3">
+              <img
+                src={companyLogo || logo}
+                alt={companyName || "Prevention & Safety"}
+                className="h-10 w-10 object-contain"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-bold text-sidebar-primary">
+                  {companyName || "PREVENTION"}
+                </span>
+                {!companyName && (
+                  <span className="text-xs text-sidebar-foreground/70">& SAFETY</span>
+                )}
+              </div>
+            </div>
+            <button onClick={() => setMobileOpen(false)} className="text-sidebar-foreground/70">
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+            {navItems.map((item) => (
+              <NavButton key={item.label} item={item} collapsed={false} isActive={location.pathname === item.href} />
+            ))}
+          </nav>
+        </aside>
+      </>
+    );
+  }
+
+  // Desktop sidebar
   return (
     <aside
       className={cn(
@@ -80,7 +149,6 @@ export function Sidebar() {
           <NavButton key={item.label} item={item} collapsed={collapsed} isActive={location.pathname === item.href} />
         ))}
       </nav>
-
 
       {/* Collapse button */}
       <button

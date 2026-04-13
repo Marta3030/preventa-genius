@@ -1,13 +1,15 @@
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Sidebar } from '@/components/layout/Sidebar';
 import { UserMenu } from '@/components/layout/UserMenu';
 import { ComplianceDashboard } from '@/components/compliance/ComplianceDashboard';
 import { ShieldCheck } from 'lucide-react';
 
 export default function Compliance() {
+  const isMobile = useIsMobile();
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="pl-64 transition-all duration-300">
+      <main className={isMobile ? "pl-0 pt-14" : "pl-64 transition-all duration-300"}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm border-b border-border">
           <div className="flex items-center justify-between px-6 py-4">
             <div>

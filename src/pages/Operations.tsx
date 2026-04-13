@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -65,6 +66,7 @@ const areaLabels: Record<string, string> = {
 
 export default function Operations() {
   const { data: tasks, isLoading } = useOperationalTasks();
+  const isMobile = useIsMobile();
   const { data: stats } = useOperationsStats();
   const updateTask = useUpdateOperationalTask();
 

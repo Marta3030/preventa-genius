@@ -56,6 +56,7 @@ const actionTypeLabels: Record<string, string> = {
 };
 
 export default function Gerencia() {
+  const isMobile = useIsMobile();
   const { toast } = useToast();
   const { user, isAdmin } = useAuth();
   const { data: actions, isLoading } = useManagementActions();

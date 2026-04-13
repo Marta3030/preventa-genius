@@ -152,6 +152,7 @@ function AISettingsTab() {
 }
 
 export default function Settings() {
+  const isMobile = useIsMobile();
   const { user, profile, isAdmin } = useAuth();
   const [isSaving, setIsSaving] = useState(false);
   const { data: compSettings } = useCompanySettings();

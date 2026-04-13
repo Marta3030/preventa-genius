@@ -81,6 +81,7 @@ const areaLabels: Record<string, string> = {
 };
 
 export default function Reclutamiento() {
+  const isMobile = useIsMobile();
   const { toast } = useToast();
   const { user, isAdmin } = useAuth();
   const { data: vacancies, isLoading: loadingVacancies } = useVacancies();

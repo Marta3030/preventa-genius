@@ -43,6 +43,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function RRHH() {
+  const isMobile = useIsMobile();
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [detailSheetOpen, setDetailSheetOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');

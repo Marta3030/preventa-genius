@@ -95,6 +95,7 @@ const getModuleName = (entityType?: string): string => {
 };
 
 export default function Alerts() {
+  const isMobile = useIsMobile();
   const { user, isAdmin } = useAuth();
   const { data: alerts, isLoading } = useAllAlerts();
   const { data: alertStats } = useAlertStats();

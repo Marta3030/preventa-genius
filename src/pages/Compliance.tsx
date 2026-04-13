@@ -5,6 +5,7 @@ import { ComplianceDashboard } from '@/components/compliance/ComplianceDashboard
 import { ShieldCheck } from 'lucide-react';
 
 export default function Compliance() {
+  const isMobile = useIsMobile();
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />

@@ -82,6 +82,7 @@ const actionStatusLabels: Record<string, string> = {
 };
 
 export default function ComiteParitario() {
+  const isMobile = useIsMobile();
   const { toast } = useToast();
   const { user, isAdmin } = useAuth();
   const { data: members, isLoading: loadingMembers } = useCommitteeMembers();

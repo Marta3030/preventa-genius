@@ -49,6 +49,7 @@ const documentTypeLabels: Record<string, string> = {
 };
 
 export default function Documents() {
+  const isMobile = useIsMobile();
   const { isAdmin } = useAuth();
   const { data: documents, isLoading } = useAllDocuments();
   const { data: stats } = useDocumentStats();

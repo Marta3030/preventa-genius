@@ -68,24 +68,32 @@ const Index = () => {
 
   const handleExport = () => {
     try {
-      exportDashboardPDF({
-        title: 'Informe Ejecutivo SST',
-        date: format(new Date(), "dd/MM/yyyy"),
-        kpis: {
-          sstCompliance,
-          legalCompliance,
-          isoCompliance,
-          tf: kpis?.tf || 0,
-          tgr: kpis?.tgr || 0,
-          daysSinceAccident,
-          openIncidents: kpis?.open_incidents || 0,
-          overdueActions,
-          totalWorkers: kpis?.total_workers || 0,
-          trainingCompliance: kpis?.training_compliance || 0,
-          inspectionsDone: kpis?.inspections_done || 0,
-          inspectionsPlanned: kpis?.inspections_planned || 0,
-        },
+      const doc = new jsPDF();
+      const now = format(new Date(), "dd/MM/yyyy HH:mm");
+      doc.setFontSize(18);
+      doc.text("Informe Ejecutivo SST", 14, 20);
+      doc.setFontSize(10);
+      doc.text(`Fecha: ${now}`, 14, 28);
+      doc.setFontSize(12);
+      let y = 40;
+      const lines = [
+        `Cumplimiento SST: ${sstCompliance}%`,
+        `Cumplimiento Legal: ${legalCompliance}%`,
+        `Cumplimiento ISO: ${isoCompliance}%`,
+        `Tasa de Frecuencia (TF): ${kpis?.tf || 0}`,
+        `Tasa de Gravedad (TGR): ${kpis?.tgr || 0}`,
+        `Días sin accidentes graves: ${daysSinceAccident}`,
+        `Incidentes abiertos: ${kpis?.open_incidents || 0}`,
+        `Acciones vencidas: ${overdueActions}`,
+        `Total trabajadores: ${kpis?.total_workers || 0}`,
+        `Capacitaciones: ${kpis?.training_compliance || 0}%`,
+        `Inspecciones: ${kpis?.inspections_done || 0}/${kpis?.inspections_planned || 0}`,
+      ];
+      lines.forEach(line => {
+        doc.text(line, 14, y);
+        y += 8;
       });
+      doc.save(`informe-sst-${format(new Date(), "yyyy-MM-dd")}.pdf`);
       toast.success('Informe exportado correctamente');
     } catch {
       toast.error('Error al exportar');
